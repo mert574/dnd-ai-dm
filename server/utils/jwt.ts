@@ -1,16 +1,9 @@
 import jwt from 'jsonwebtoken';
 import { createError } from './api';
+import { getEnv } from './env';
 import type { User } from '../db/types';
 import type { Secret } from 'jsonwebtoken';
 import ms from 'ms';
-import assert from 'node:assert';
-
-const {
-    JWT_SECRET = 'change-this-in-production',
-    JWT_EXPIRES_IN = '7d',
-    JWT_REFRESH_SECRET = 'change-this-in-production',
-    JWT_REFRESH_EXPIRES_IN = '30d'
-} = process.env;
 
 export interface JwtPayload {
     userId: number;
@@ -25,10 +18,7 @@ export interface TokenPair {
 }
 
 export function generateTokenPair(user: User): TokenPair {
-    assert(JWT_SECRET, 'JWT_SECRET is not set');
-    assert(JWT_EXPIRES_IN, 'JWT_EXPIRES_IN is not set');
-    assert(JWT_REFRESH_SECRET, 'JWT_REFRESH_SECRET is not set');
-    assert(JWT_REFRESH_EXPIRES_IN, 'JWT_REFRESH_EXPIRES_IN is not set');
+    const env = getEnv();
 
     const payload: JwtPayload = {
         userId: user.id,
@@ -42,16 +32,16 @@ export function generateTokenPair(user: User): TokenPair {
         type: 'refresh'
     };
 
-    const token = jwt.sign(payload, JWT_SECRET as Secret, {
-        expiresIn: JWT_EXPIRES_IN as jwt.SignOptions['expiresIn']
+    const token = jwt.sign(payload, env.JWT_SECRET as Secret, {
+        expiresIn: env.JWT_EXPIRES_IN as jwt.SignOptions['expiresIn']
     });
 
-    const refreshToken = jwt.sign(refreshPayload, JWT_REFRESH_SECRET as Secret, {
-        expiresIn: JWT_REFRESH_EXPIRES_IN as jwt.SignOptions['expiresIn']
+    const refreshToken = jwt.sign(refreshPayload, env.JWT_REFRESH_SECRET as Secret, {
+        expiresIn: env.JWT_REFRESH_EXPIRES_IN as jwt.SignOptions['expiresIn']
     });
 
     // @ts-expect-error - ms types are too strict, we validate the result
-    const expiresInMs = ms(JWT_EXPIRES_IN);
+    const expiresInMs = ms(env.JWT_EXPIRES_IN);
     if (typeof expiresInMs !== 'number') {
         throw new Error('Invalid expiration time');
     }
@@ -65,7 +55,8 @@ export function generateTokenPair(user: User): TokenPair {
 
 export function verifyToken(token: string, type: 'access' | 'refresh' = 'access'): JwtPayload {
     try {
-        const secret = type === 'access' ? JWT_SECRET : JWT_REFRESH_SECRET;
+        const env = getEnv();
+        const secret = type === 'access' ? env.JWT_SECRET : env.JWT_REFRESH_SECRET;
         const payload = jwt.verify(token, secret as Secret) as JwtPayload;
 
         if (payload.type && payload.type !== type) {
