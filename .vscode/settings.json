@@ -1,0 +1,19 @@
+{
+    "sqltools.useNodeRuntime": true,
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "database": "${workspaceFolder:dnd}/data/game.db",
+            "name": "dnd-game",
+            "group": "dnd"
+        },
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "dnd-cache",
+            "group": "dnd",
+            "database": "${workspaceFolder:dnd}/data/open5e-cache.db"
+        }
+    ]
+}
