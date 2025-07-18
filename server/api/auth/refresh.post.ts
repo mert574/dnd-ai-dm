@@ -1,9 +1,9 @@
-import ms from 'ms';
 import { createError, successResponse } from '../../utils/api';
 import { refreshAccessToken } from '../../utils/jwt';
+import { getAuthCookieOptions, COOKIE_NAMES } from '../../utils/auth/cookie';
 
 export default defineEventHandler(async (event) => {
-    const refreshToken = getCookie(event, 'refresh_token');
+    const refreshToken = getCookie(event, COOKIE_NAMES.REFRESH_TOKEN);
     if (!refreshToken) {
         throw createError.unauthorized('No refresh token');
     }
@@ -11,20 +11,8 @@ export default defineEventHandler(async (event) => {
     try {
         const { token, refreshToken: newRefreshToken, expiresIn } = refreshAccessToken(refreshToken);
 
-        setCookie(event, 'auth_token', token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
-            maxAge: expiresIn / 1000
-        });
-
-        setCookie(event, 'refresh_token', newRefreshToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
-            path: '/api/auth',
-            maxAge: ms('30d') / 1000
-        });
+        setCookie(event, COOKIE_NAMES.ACCESS_TOKEN, token, getAuthCookieOptions('access'));
+        setCookie(event, COOKIE_NAMES.REFRESH_TOKEN, newRefreshToken, getAuthCookieOptions('refresh'));
 
         return successResponse({ token, expiresIn });
     } catch (error) {

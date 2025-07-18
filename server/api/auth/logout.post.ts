@@ -1,19 +1,9 @@
 import { successResponse } from '../../utils/api';
+import { getAuthCookieOptions, COOKIE_NAMES } from '../../utils/auth/cookie';
 
 export default defineEventHandler((event) => {
-    deleteCookie(event, 'auth_token', {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        path: '/'
-    });
-
-    deleteCookie(event, 'refresh_token', {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        path: '/'
-    });
+    deleteCookie(event, COOKIE_NAMES.ACCESS_TOKEN, getAuthCookieOptions('access'));
+    deleteCookie(event, COOKIE_NAMES.REFRESH_TOKEN, getAuthCookieOptions('refresh'));
 
     return successResponse({ message: 'Logged out successfully' });
 }); 

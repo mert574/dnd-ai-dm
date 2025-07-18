@@ -3,8 +3,8 @@ import { createError, successResponse, HTTP_STATUS } from '../../utils/api';
 import { queries } from '../../db/queries';
 import { generateTokenPair } from '../../utils/jwt';
 import { hashPassword } from '../../utils/auth';
+import { getAuthCookieOptions, COOKIE_NAMES } from '../../utils/auth/cookie';
 import type { User } from '../../db/types';
-import ms from 'ms';
 
 export default defineEventHandler(async (event) => {
     const body = await readBody(event);
@@ -34,21 +34,8 @@ export default defineEventHandler(async (event) => {
 
         const { token, refreshToken, expiresIn } = generateTokenPair(user);
 
-        setCookie(event, 'auth_token', token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
-            maxAge: expiresIn / 1000,
-            path: '/'
-        });
-
-        setCookie(event, 'refresh_token', refreshToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
-            path: '/',
-            maxAge: ms('30d') / 1000
-        });
+        setCookie(event, COOKIE_NAMES.ACCESS_TOKEN, token, getAuthCookieOptions('access'));
+        setCookie(event, COOKIE_NAMES.REFRESH_TOKEN, refreshToken, getAuthCookieOptions('refresh'));
 
         return successResponse({
             user: {

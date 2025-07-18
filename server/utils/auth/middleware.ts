@@ -2,12 +2,13 @@ import { H3Event } from 'h3';
 import { createError } from '../api';
 import { queries } from '../../db/queries';
 import { verifyToken, parseAuthHeader, refreshAccessToken } from '../jwt';
+import { getAuthCookieOptions, COOKIE_NAMES } from './cookie';
 import type { User, Session, Character } from '../../db/types';
 
 export async function getUser(event: H3Event): Promise<User | null> {
     try {
         // Check for auth token in cookie or header
-        const authCookie = getCookie(event, 'auth_token');
+        const authCookie = getCookie(event, COOKIE_NAMES.ACCESS_TOKEN);
         const authHeader = getHeader(event, 'Authorization');
         
         if (!authCookie && !authHeader) {
@@ -26,7 +27,7 @@ export async function getUser(event: H3Event): Promise<User | null> {
         } catch (error: any) {
             // If token is expired and we have a refresh token, try to refresh
             if (error.message === 'Token expired') {
-                const refreshToken = getCookie(event, 'refresh_token');
+                const refreshToken = getCookie(event, COOKIE_NAMES.REFRESH_TOKEN);
                 if (!refreshToken) {
                     return null;
                 }
@@ -36,21 +37,15 @@ export async function getUser(event: H3Event): Promise<User | null> {
                     const { token: newToken, expiresIn } = refreshAccessToken(refreshToken);
                     
                     // Set new auth token cookie
-                    setCookie(event, 'auth_token', newToken, {
-                        httpOnly: true,
-                        secure: process.env.NODE_ENV === 'production',
-                        sameSite: 'lax',
-                        path: '/',
-                        maxAge: expiresIn / 1000
-                    });
+                    setCookie(event, COOKIE_NAMES.ACCESS_TOKEN, newToken, getAuthCookieOptions('access'));
 
                     // Verify new token and get user
                     const payload = verifyToken(newToken);
                     return queries.getUserById.get(payload.userId) as User;
                 } catch {
                     // If refresh fails, clear all auth cookies
-                    deleteCookie(event, 'auth_token', { path: '/' });
-                    deleteCookie(event, 'refresh_token', { path: '/' });
+                    deleteCookie(event, COOKIE_NAMES.ACCESS_TOKEN, getAuthCookieOptions('access'));
+                    deleteCookie(event, COOKIE_NAMES.REFRESH_TOKEN, getAuthCookieOptions('refresh'));
                     return null;
                 }
             }
