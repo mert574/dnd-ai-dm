@@ -6,7 +6,7 @@ export const commonSchemas = {
     id: z.number().int().positive(),
     email: z.string().email(),
     password: z.string().min(8, 'Password must be at least 8 characters'),
-    sessionCode: z.string().regex(/^[A-Z]+_[A-Z]+\d{2}$/),
+    campaignCode: z.string().regex(/^[A-Z]+_[A-Z]+\d{2}$/),
     pagination: z.object({
         page: z.number().int().min(1).default(1),
         limit: z.number().int().min(1).max(100).default(20)
@@ -53,8 +53,8 @@ export const userSchemas = {
     })
 };
 
-// Session schemas
-export const sessionSchemas = {
+// Campaign schemas
+export const campaignSchemas = {
     create: z.object({
         name: z.string().min(3).max(100)
     }),

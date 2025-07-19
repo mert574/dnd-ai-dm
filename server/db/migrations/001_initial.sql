@@ -5,8 +5,8 @@ CREATE TABLE schema_versions (
     applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE sessions (
-    id TEXT PRIMARY KEY,  -- For session codes like "DRAGON42"
+CREATE TABLE campaigns (
+    id TEXT PRIMARY KEY,  -- For campaign codes like "DRAGON42"
     name TEXT NOT NULL,
     status TEXT NOT NULL CHECK (status IN ('active', 'paused', 'completed')),
     game_state JSON,
@@ -74,29 +74,29 @@ CREATE TABLE characters (
 
     -- Metadata
     user_id TEXT NOT NULL,
-    session_id TEXT,
+    campaign_id TEXT,
     is_active BOOLEAN DEFAULT true,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     FOREIGN KEY (user_id) REFERENCES user(id),
-    FOREIGN KEY (session_id) REFERENCES sessions(id)
+    FOREIGN KEY (campaign_id) REFERENCES campaigns(id)
 );
 
 CREATE TABLE messages (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     content TEXT NOT NULL,
     type TEXT NOT NULL CHECK (type IN ('chat', 'action', 'system')),
-    session_id TEXT NOT NULL,
+    campaign_id TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (session_id) REFERENCES sessions(id)
+    FOREIGN KEY (campaign_id) REFERENCES campaigns(id)
 );
 
 -- Indexes
-CREATE INDEX idx_sessions_user ON sessions(user_id);
+CREATE INDEX idx_campaigns_user ON campaigns(user_id);
 CREATE INDEX idx_characters_user ON characters(user_id);
-CREATE INDEX idx_characters_session ON characters(session_id);
-CREATE INDEX idx_messages_session ON messages(session_id);
+CREATE INDEX idx_characters_campaign ON characters(campaign_id);
+CREATE INDEX idx_messages_campaign ON messages(campaign_id);
 CREATE INDEX idx_characters_level ON characters(level);
 CREATE INDEX idx_characters_class ON characters(class);
 CREATE INDEX idx_characters_race ON characters(race);
@@ -107,12 +107,12 @@ DROP INDEX IF EXISTS idx_characters_active;
 DROP INDEX IF EXISTS idx_characters_race;
 DROP INDEX IF EXISTS idx_characters_class;
 DROP INDEX IF EXISTS idx_characters_level;
-DROP INDEX IF EXISTS idx_messages_session;
-DROP INDEX IF EXISTS idx_characters_session;
+DROP INDEX IF EXISTS idx_messages_campaign;
+DROP INDEX IF EXISTS idx_characters_campaign;
 DROP INDEX IF EXISTS idx_characters_user;
-DROP INDEX IF EXISTS idx_sessions_user;
+DROP INDEX IF EXISTS idx_campaigns_user;
 
 DROP TABLE IF EXISTS messages;
 DROP TABLE IF EXISTS characters;
-DROP TABLE IF EXISTS sessions;
+DROP TABLE IF EXISTS campaigns;
 DROP TABLE IF EXISTS schema_versions; 

@@ -16,7 +16,7 @@ const envSchema = z.object({
     
     // Security Configuration
     BCRYPT_ROUNDS: z.string().default('10').transform(Number),
-    SESSION_CODE_LENGTH: z.string().default('6').transform(Number),
+    CAMPAIGN_CODE_LENGTH: z.string().default('6').transform(Number),
     
     // External APIs
     OPEN5E_API_URL: z.string().url().default('https://api.open5e.com'),

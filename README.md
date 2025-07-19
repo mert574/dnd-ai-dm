@@ -59,7 +59,7 @@ npm run db:migrate
 This creates `./data/game.db` with both application and authentication tables:
 
 **Application Tables:**
-- `sessions` - D&D game sessions 
+- `campaigns` - D&D game campaigns 
 - `characters` - Player characters  
 - `messages` - Game chat/actions
 

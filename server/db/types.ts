@@ -2,7 +2,7 @@
 export type Timestamp = string;
 
 // Enums
-export enum SessionStatus {
+export enum CampaignStatus {
     Active = 'active',
     Paused = 'paused',
     Completed = 'completed'
@@ -120,10 +120,10 @@ export interface User {
     updated_at: Timestamp;
 }
 
-export interface Session {
+export interface Campaign {
     id: string;
     name: string;
-    status: SessionStatus;
+    status: CampaignStatus;
     game_state: GameState | null;
     user_id: number;
     created_at: Timestamp;
@@ -188,7 +188,7 @@ export interface Character {
 
     // Metadata
     user_id: number;
-    session_id?: string;
+    campaign_id?: string;
     is_active: boolean;
     created_at: Timestamp;
     updated_at: Timestamp;
@@ -198,6 +198,6 @@ export interface Message {
     id: number;
     content: string;
     type: MessageType;
-    session_id: string;
+    campaign_id: string;
     created_at: Timestamp;
 } 

@@ -14,7 +14,7 @@ Set up a SQLite database using better-sqlite3 for the D&D AI DM project. Direct 
 
 2. **Schema Design**
    - User management
-   - Game sessions
+   - Game campaigns
    - Characters
    - Game state
    - Messages
@@ -57,9 +57,9 @@ CREATE TABLE users (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Game Sessions
-CREATE TABLE sessions (
-    id TEXT PRIMARY KEY,  -- For session codes like "DRAGON42"
+-- Game Campaigns
+CREATE TABLE campaigns (
+    id TEXT PRIMARY KEY,  -- For campaign codes like "DRAGON42"
     name TEXT NOT NULL,
     status TEXT NOT NULL, -- active, paused, completed
     game_state JSON,
@@ -128,13 +128,13 @@ CREATE TABLE characters (
 
     -- Metadata
     user_id INTEGER NOT NULL,
-    session_id TEXT,
+    campaign_id TEXT,
     is_active BOOLEAN DEFAULT true,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (session_id) REFERENCES sessions(id)
+    FOREIGN KEY (campaign_id) REFERENCES campaigns(id)
 );
 
 -- Messages
@@ -142,17 +142,17 @@ CREATE TABLE messages (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     content TEXT NOT NULL,
     type TEXT NOT NULL, -- chat, action, system
-    session_id TEXT NOT NULL,  -- Updated to match sessions.id type
+    campaign_id TEXT NOT NULL,  -- Updated to match campaigns.id type
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (session_id) REFERENCES sessions(id)
+    FOREIGN KEY (campaign_id) REFERENCES campaigns(id)
 );
 
 -- Indexes
 CREATE INDEX idx_users_email ON users(email);
-CREATE INDEX idx_sessions_user ON sessions(user_id);
+CREATE INDEX idx_campaigns_user ON campaigns(user_id);
 CREATE INDEX idx_characters_user ON characters(user_id);
-CREATE INDEX idx_characters_session ON characters(session_id);
-CREATE INDEX idx_messages_session ON messages(session_id);
+CREATE INDEX idx_characters_campaign ON characters(campaign_id);
+CREATE INDEX idx_messages_campaign ON messages(campaign_id);
 
 -- Additional indexes for character queries
 CREATE INDEX idx_characters_level ON characters(level);
@@ -208,20 +208,20 @@ server/
        SELECT * FROM users WHERE id = ?
      `),
      
-     createSession: db.prepare(`
-       INSERT INTO sessions (id, name, status, user_id)
-       VALUES (@sessionCode, @name, @status, @userId)
+     createCampaign: db.prepare(`
+       INSERT INTO campaigns (id, name, status, user_id)
+       VALUES (@campaignCode, @name, @status, @userId)
      `),
 
-     getCharactersInSession: db.prepare(`
+     getCharactersInCampaign: db.prepare(`
        SELECT c.*, u.name as owner_name 
        FROM characters c
        JOIN users u ON u.id = c.user_id
-       WHERE c.session_id = ?
+       WHERE c.campaign_id = ?
      `),
 
-     // Helper function to generate session codes
-     generateSessionCode: () => {
+     // Helper function to generate campaign codes
+     generateCampaignCode: () => {
        const adjectives = ['BRAVE', 'DARK', 'MYSTIC', 'WILD'];
        const nouns = ['DRAGON', 'QUEST', 'SWORD', 'SPELL'];
        const adj = adjectives[Math.floor(Math.random() * adjectives.length)];

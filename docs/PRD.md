@@ -13,9 +13,9 @@ D&D AI DM is a web-based multiplayer platform that enables players to experience
    - Natural language processing for player inputs
 
 2. **Multiplayer System**
-   - Real-time game session management
-   - Unique session codes for game instances
-   - Player authentication and session joining
+   - Real-time game campaign management
+- Unique campaign codes for game instances
+- Player authentication and campaign joining
    - Turn-based action system
    - Synchronization between main display and player devices
 
@@ -27,7 +27,7 @@ D&D AI DM is a web-based multiplayer platform that enables players to experience
    - Dice rolling animations and results
 
 4. **Game Flow**
-   - Session creation and management
+   - Campaign creation and management
    - Turn order management
    - Action input system
    - Skip turn functionality
@@ -58,19 +58,19 @@ D&D AI DM is a web-based multiplayer platform that enables players to experience
 3. **Database**
    - SQLite with Prisma ORM
    - Schema for:
-     - Game sessions
+     - Game campaigns
      - Characters
      - Inventory
      - Game history
      - Combat logs
    - Local file storage for:
      - Save states
-     - Session data
+     - Campaign data
      - Character data
 
 4. **API Layer**
    - Nuxt server routes (Nitro) for:
-     - Authentication and session management
+     - Authentication and campaign management
      - Game state synchronization
      - OpenAI integration
      - Open5e data caching and proxying

@@ -47,12 +47,12 @@ GET    /api/auth/me
 GET    /api/users/:id
 PATCH  /api/users/:id
 
-// Sessions
-GET    /api/sessions
-POST   /api/sessions
-GET    /api/sessions/:id
-PATCH  /api/sessions/:id
-DELETE /api/sessions/:id
+// Campaigns
+GET    /api/campaigns
+POST   /api/campaigns
+GET    /api/campaigns/:id
+PATCH  /api/campaigns/:id
+DELETE /api/campaigns/:id
 
 // Characters
 GET    /api/characters
@@ -74,8 +74,8 @@ GET    /api/data/monsters
 // Connection
 'connect'          // Client connected
 'disconnect'       // Client disconnected
-'join_session'     // Join game session
-'leave_session'    // Leave game session
+'join_campaign'    // Join game campaign
+'leave_campaign'   // Leave game campaign
 
 // Chat
 'message'          // Chat message

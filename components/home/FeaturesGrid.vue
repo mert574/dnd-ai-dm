@@ -9,7 +9,7 @@
     <div class="bg-gray-800 rounded-lg border border-gray-700 p-6">
       <h3 class="text-xl font-bold text-red-500 mb-3">Real-time Multiplayer</h3>
       <p class="text-gray-300">
-        Play together with friends in synchronized game sessions.
+        Play together with friends in synchronized game campaigns.
       </p>
     </div>
     <div class="bg-gray-800 rounded-lg border border-gray-700 p-6">

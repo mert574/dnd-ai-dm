@@ -18,24 +18,24 @@ export const queries = {
         SELECT * FROM users WHERE email = ?
     `),
 
-    // Session queries
-    createSession: db.prepare(`
-        INSERT INTO sessions (id, name, status, user_id)
-        VALUES (@sessionCode, @name, @status, @userId)
+    // Campaign queries
+    createCampaign: db.prepare(`
+        INSERT INTO campaigns (id, name, status, user_id)
+        VALUES (@campaignCode, @name, @status, @userId)
         RETURNING *
     `),
 
-    getSessionById: db.prepare(`
-        SELECT s.*, u.name as dm_name
-        FROM sessions s
-        JOIN users u ON u.id = s.user_id
-        WHERE s.id = ?
+    getCampaignById: db.prepare(`
+        SELECT c.*, u.name as dm_name
+        FROM campaigns c
+        JOIN users u ON u.id = c.user_id
+        WHERE c.id = ?
     `),
 
-    updateSessionStatus: db.prepare(`
-        UPDATE sessions
+    updateCampaignStatus: db.prepare(`
+        UPDATE campaigns
         SET status = @status, updated_at = CURRENT_TIMESTAMP
-        WHERE id = @sessionId
+        WHERE id = @campaignId
         RETURNING *
     `),
 
@@ -61,11 +61,11 @@ export const queries = {
         SELECT * FROM characters WHERE id = ?
     `),
 
-    getCharactersInSession: db.prepare(`
+    getCharactersInCampaign: db.prepare(`
         SELECT c.*, u.name as owner_name
         FROM characters c
         JOIN users u ON u.id = c.user_id
-        WHERE c.session_id = ?
+        WHERE c.campaign_id = ?
     `),
 
     updateCharacterHp: db.prepare(`
@@ -79,20 +79,20 @@ export const queries = {
 
     // Message queries
     createMessage: db.prepare(`
-        INSERT INTO messages (content, type, session_id)
-        VALUES (@content, @type, @sessionId)
+        INSERT INTO messages (content, type, campaign_id)
+        VALUES (@content, @type, @campaignId)
         RETURNING *
     `),
 
-    getSessionMessages: db.prepare(`
+    getCampaignMessages: db.prepare(`
         SELECT * FROM messages
-        WHERE session_id = ?
+        WHERE campaign_id = ?
         ORDER BY created_at DESC
         LIMIT ?
     `),
 
-    // Helper function to generate session codes
-    generateSessionCode: () => {
+    // Helper function to generate campaign codes
+    generateCampaignCode: () => {
         const adjectives = ['BRAVE', 'DARK', 'MYSTIC', 'WILD', 'EPIC', 'MIGHTY'];
         const nouns = ['DRAGON', 'QUEST', 'SWORD', 'SPELL', 'REALM', 'TALE'];
         
