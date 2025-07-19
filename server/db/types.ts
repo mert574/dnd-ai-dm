@@ -1,6 +1,5 @@
 // Basic types
 export type Timestamp = string;
-export type JSON = any; // We'll refine this for specific use cases
 
 // Enums
 export enum SessionStatus {
@@ -24,6 +23,30 @@ export enum SpellcastingAbility {
     CHA = 'CHA'
 }
 
+// Game state types
+export interface GameState {
+    currentTurn?: number;
+    initiative?: InitiativeEntry[];
+    combatActive?: boolean;
+    conditions?: CharacterCondition[];
+    notes?: string[];
+    customData?: Record<string, unknown>;
+}
+
+export interface InitiativeEntry {
+    characterId: number;
+    name: string;
+    initiative: number;
+    isNPC?: boolean;
+}
+
+export interface CharacterCondition {
+    characterId: number;
+    condition: string;
+    duration?: number;
+    description?: string;
+}
+
 // Complex JSON types
 export interface Currency {
     pp: number; // Platinum
@@ -33,13 +56,33 @@ export interface Currency {
     cp: number; // Copper
 }
 
-export interface CharacterStats {
-    baseValue: number;
-    modifier: number;
-    savingThrow: {
-        proficient: boolean;
-        bonus: number;
-    };
+export interface SavingThrow {
+    ability: keyof AbilityScores;
+    proficient: boolean;
+    bonus?: number;
+}
+
+export interface AbilityScores {
+    strength: number;
+    dexterity: number;
+    constitution: number;
+    intelligence: number;
+    wisdom: number;
+    charisma: number;
+}
+
+export interface Skill {
+    name: string;
+    ability: keyof AbilityScores;
+    proficient: boolean;
+    expertise?: boolean;
+}
+
+export interface Feature {
+    name: string;
+    description: string;
+    source?: string;
+    level?: number;
 }
 
 export interface Equipment {
@@ -83,7 +126,7 @@ export interface Session {
     id: string;
     name: string;
     status: SessionStatus;
-    game_state: JSON;
+    game_state: GameState | null;
     user_id: number;
     created_at: Timestamp;
     updated_at: Timestamp;
@@ -122,22 +165,22 @@ export interface Character {
 
     // Proficiencies & Features
     proficiency_bonus: number;
-    saving_throws: CharacterStats[];
-    skill_proficiencies: { [skill: string]: boolean };
-    languages: string[];
-    features: { [name: string]: string };
+    saving_throws: SavingThrow[] | null;
+    skill_proficiencies: Skill[] | null;
+    languages: string[] | null;
+    features: Feature[] | null;
 
     // Equipment
-    armor: Armor[];
-    weapons: Weapon[];
-    inventory: Equipment[];
+    armor: Armor[] | null;
+    weapons: Weapon[] | null;
+    inventory: Equipment[] | null;
     gold: number;  // Gold pieces (gp)
 
     // Magic
     spellcasting_ability?: SpellcastingAbility;
-    spell_slots?: SpellSlots;
-    spells_known?: string[];
-    prepared_spells?: string[];
+    spell_slots: SpellSlots | null;
+    spells_known: string[] | null;
+    prepared_spells: string[] | null;
 
     // Personality
     personality_traits?: string;

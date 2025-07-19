@@ -3,7 +3,9 @@
     "allow": [
       "Bash(touch:*)",
       "Bash(git add:*)",
-      "Bash(git restore:*)"
+      "Bash(git restore:*)",
+      "Bash(yarn tsc:*)",
+      "Bash(yarn typecheck)"
     ],
     "deny": []
   }

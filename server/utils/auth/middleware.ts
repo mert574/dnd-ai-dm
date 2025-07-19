@@ -24,9 +24,9 @@ export async function getUser(event: H3Event): Promise<User | null> {
             // Try to verify the current token
             const payload = verifyToken(token);
             return queries.getUserById.get(payload.userId) as User;
-        } catch (error: any) {
+        } catch (error) {
             // If token is expired and we have a refresh token, try to refresh
-            if (error.message === 'Token expired') {
+            if (error instanceof Error && error.message === 'Token expired') {
                 const refreshToken = getCookie(event, COOKIE_NAMES.REFRESH_TOKEN);
                 if (!refreshToken) {
                     return null;

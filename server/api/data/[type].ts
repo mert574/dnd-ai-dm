@@ -1,4 +1,5 @@
 import { H3Event } from 'h3';
+import { z } from 'zod';
 import { Open5eClient } from '~/server/utils/open5e/client';
 import { Open5eCache } from '~/server/utils/open5e/cache';
 import { Endpoint, Open5eError } from '~/server/utils/open5e/types';
@@ -12,6 +13,21 @@ const cache = new Open5eCache();
 // Get valid endpoint values
 const validEndpoints = Object.values(Endpoint);
 
+// Query parameter validation schema
+const querySchema = z.object({
+  search: z.string().optional(),
+  slug: z.string().optional(),
+  limit: z.string().regex(/^\d+$/).transform(Number).pipe(
+    z.number().min(1).max(100)
+  ).optional()
+}).refine(
+  (data) => {
+    // Can't have both search and slug
+    return !(data.search && data.slug);
+  },
+  { message: "Cannot specify both 'search' and 'slug' parameters" }
+);
+
 export default defineEventHandler(async (event: H3Event) => {
   try {
     // Get endpoint type from URL
@@ -22,9 +38,15 @@ export default defineEventHandler(async (event: H3Event) => {
 
     const endpoint = type as Endpoint;
 
-    // Get query parameters
-    const query = getQuery(event);
-    const { search, slug, limit } = query;
+    // Get and validate query parameters
+    const rawQuery = getQuery(event);
+    const validationResult = querySchema.safeParse(rawQuery);
+    
+    if (!validationResult.success) {
+      throw createError.validation('Invalid query parameters', validationResult.error.errors);
+    }
+    
+    const { search, slug, limit } = validationResult.data;
 
     // Generate cache key (include limit in the key)
     const cacheKey = slug 
@@ -40,7 +62,7 @@ export default defineEventHandler(async (event: H3Event) => {
     }
 
     // Fetch from API based on query type
-    let data: any[];
+    let data: unknown[];
     if (slug) {
       data = [await client.fetchBySlug(endpoint, slug as string)];
     } else if (search) {
@@ -58,7 +80,7 @@ export default defineEventHandler(async (event: H3Event) => {
     );
 
     // Return limited result if requested
-    return limit ? data.slice(0, Number(limit)) : data;
+    return limit ? data.slice(0, limit) : data;
   } catch (error: unknown) {
     console.error('Open5e API Error:', error);
     

@@ -58,7 +58,7 @@ export class Open5eError extends Error {
     message: string,
     public statusCode?: number,
     public endpoint?: string,
-    public context?: any
+    public context?: unknown
   ) {
     super(message);
     this.name = 'Open5eError';

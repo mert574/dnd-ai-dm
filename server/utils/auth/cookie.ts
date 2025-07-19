@@ -1,11 +1,11 @@
-import type { CookieOptions } from 'h3';
 import { getEnv } from '../env';
 
-export interface AuthCookieOptions {
+export interface CookieOptions {
     httpOnly?: boolean;
-    sameSite?: CookieOptions['sameSite'];
+    sameSite?: 'strict' | 'lax' | 'none';
     secure?: boolean;
     path?: string;
+    maxAge?: number;
 }
 
 export function getAuthCookieOptions(type: 'access' | 'refresh'): CookieOptions {

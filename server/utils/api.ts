@@ -1,13 +1,13 @@
 import { H3Error } from 'h3';
 
 // Standard API response format
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
     success: boolean;
     data?: T;
     error?: {
         code: string;
         message: string;
-        details?: any;
+        details?: unknown;
     };
 }
 
@@ -38,7 +38,7 @@ export class ApiError extends H3Error {
         code: ApiErrorCode,
         message: string,
         statusCode: number = HTTP_STATUS.INTERNAL_ERROR,
-        details?: any
+        details?: unknown
     ) {
         super(message);
         this.statusCode = statusCode;
@@ -76,7 +76,7 @@ export function errorResponse(
 
 // Common error creators
 export const createError = {
-    badRequest: (message: string, details?: any) => 
+    badRequest: (message: string, details?: unknown) => 
         new ApiError(ApiErrorCode.BAD_REQUEST, message, HTTP_STATUS.BAD_REQUEST, details),
     
     unauthorized: (message: string = 'Unauthorized') => 
@@ -91,6 +91,6 @@ export const createError = {
     internal: (message: string = 'Internal Server Error') => 
         new ApiError(ApiErrorCode.INTERNAL_ERROR, message, HTTP_STATUS.INTERNAL_ERROR),
     
-    validation: (message: string, details?: any) => 
+    validation: (message: string, details?: unknown) => 
         new ApiError(ApiErrorCode.VALIDATION_ERROR, message, HTTP_STATUS.BAD_REQUEST, details)
 }; 

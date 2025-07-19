@@ -129,20 +129,24 @@ export class Open5eClient {
     }
   }
 
-  private shouldRetry(error: any): boolean {
+  private shouldRetry(error: unknown): boolean {
     // Retry on network errors or 5xx responses
-    return (
-      !error.response ||
-      (error.response?.status >= 500 && error.response?.status < 600)
-    );
+    if (error && typeof error === 'object' && 'response' in error) {
+      const e = error as { response?: { status?: number } };
+      return (
+        !e.response ||
+        (e.response?.status !== undefined && e.response.status >= 500 && e.response.status < 600)
+      );
+    }
+    return true;
   }
 
-  private async handleRequest(request: any) {
+  private async handleRequest(request: unknown) {
     await this.checkRateLimit();
     this.rateLimitState.requests++;
   }
 
-  private handleResponse(response: any) {
+  private handleResponse(response: unknown) {
     // Reset rate limit window if needed
     const now = Date.now();
     if (now - this.rateLimitState.windowStart >= this.config.rateLimit.windowMs) {
@@ -153,7 +157,7 @@ export class Open5eClient {
     }
   }
 
-  private handleError(error: any) {
+  private handleError(error: unknown) {
     throw this.normalizeError(error);
   }
 
@@ -180,17 +184,29 @@ export class Open5eClient {
     }
   }
 
-  private normalizeError(error: any, endpoint?: string): Open5eError {
+  private normalizeError(error: unknown, endpoint?: string): Open5eError {
     if (error instanceof Open5eError) {
       return error;
     }
 
-    const statusCode = error.response?.status;
-    const message = error.response?.data?.detail || error.message || 'Unknown error';
+    let statusCode: number | undefined;
+    let message = 'Unknown error';
+    
+    if (error && typeof error === 'object') {
+      const e = error as { response?: { status?: number; data?: { detail?: string } }; message?: string };
+      statusCode = e.response?.status;
+      message = e.response?.data?.detail || e.message || message;
+    }
 
-    return new Open5eError(message, statusCode, endpoint, {
-      url: error.request?.url,
-      data: error.response?.data
-    });
+    let context: unknown = undefined;
+    if (error && typeof error === 'object') {
+      const e = error as { request?: { url?: string }; response?: { data?: unknown } };
+      context = {
+        url: e.request?.url,
+        data: e.response?.data
+      };
+    }
+    
+    return new Open5eError(message, statusCode, endpoint, context);
   }
 } 
