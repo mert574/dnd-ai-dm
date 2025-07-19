@@ -11,7 +11,8 @@
       "Bash(pnpm install:*)",
       "Bash(pnpm:*)",
       "Bash(timeout 10 pnpm dev)",
-      "Bash(npx vue-tsc:*)"
+      "Bash(npx vue-tsc:*)",
+      "Bash(npx npm-check-updates:*)"
     ],
     "deny": []
   }

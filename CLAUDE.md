@@ -15,19 +15,19 @@ This is a D&D AI Dungeon Master application built with:
 
 ```bash
 # Development
-pnpm dev        # Start development server on http://localhost:3000
+npm run dev        # Start development server on http://localhost:3000
 
 # Production
-pnpm build      # Build for production
-pnpm preview    # Preview production build locally
+npm run build      # Build for production
+npm run preview    # Preview production build locally
 
 # Code Quality
-pnpm lint       # Run ESLint to check code quality
-pnpm lint:fix   # Auto-fix ESLint issues where possible
-pnpm typecheck  # Run TypeScript type checking
+npm run lint       # Run ESLint to check code quality
+npm run lint:fix   # Auto-fix ESLint issues where possible
+npm run typecheck  # Run TypeScript type checking
 
 # Other
-pnpm generate   # Generate static site
+npm run generate   # Generate static site
 ```
 
 ## Architecture Overview
@@ -77,7 +77,7 @@ Before implementing features:
 
 ### Important Notes
 - **No testing framework** - Project explicitly states "Testing: No tests"
-- **No linting setup** - TypeScript strict mode is the only code quality check
+- **Linting**: ESLint with TypeScript and Vue support for code quality
 - SSR is disabled (SPA mode)
 - Always verify auth middleware requirements for new endpoints
 - Use existing patterns for consistency

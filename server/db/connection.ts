@@ -10,7 +10,7 @@ export function getDatabase(): Database.Database {
         // Initialize database
         db = new Database(join(process.cwd(), 'data/game.db'), {
             // Verbose logging in development
-            verbose: process.dev ? console.log : undefined,
+            verbose: import.meta.dev ? console.log : undefined,
             // Better performance with larger timeout
             timeout: 5000,
             // Read-only mode protection
