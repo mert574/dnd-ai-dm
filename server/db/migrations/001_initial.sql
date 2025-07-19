@@ -5,24 +5,15 @@ CREATE TABLE schema_versions (
     applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    email TEXT UNIQUE NOT NULL,
-    password_hash TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
 CREATE TABLE sessions (
     id TEXT PRIMARY KEY,  -- For session codes like "DRAGON42"
     name TEXT NOT NULL,
     status TEXT NOT NULL CHECK (status IN ('active', 'paused', 'completed')),
     game_state JSON,
-    user_id INTEGER NOT NULL,
+    user_id TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    FOREIGN KEY (user_id) REFERENCES user(id)
 );
 
 CREATE TABLE characters (
@@ -82,13 +73,13 @@ CREATE TABLE characters (
     flaws TEXT,
 
     -- Metadata
-    user_id INTEGER NOT NULL,
+    user_id TEXT NOT NULL,
     session_id TEXT,
     is_active BOOLEAN DEFAULT true,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
-    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (user_id) REFERENCES user(id),
     FOREIGN KEY (session_id) REFERENCES sessions(id)
 );
 
@@ -102,7 +93,6 @@ CREATE TABLE messages (
 );
 
 -- Indexes
-CREATE INDEX idx_users_email ON users(email);
 CREATE INDEX idx_sessions_user ON sessions(user_id);
 CREATE INDEX idx_characters_user ON characters(user_id);
 CREATE INDEX idx_characters_session ON characters(session_id);
@@ -121,10 +111,8 @@ DROP INDEX IF EXISTS idx_messages_session;
 DROP INDEX IF EXISTS idx_characters_session;
 DROP INDEX IF EXISTS idx_characters_user;
 DROP INDEX IF EXISTS idx_sessions_user;
-DROP INDEX IF EXISTS idx_users_email;
 
 DROP TABLE IF EXISTS messages;
 DROP TABLE IF EXISTS characters;
 DROP TABLE IF EXISTS sessions;
-DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS schema_versions; 

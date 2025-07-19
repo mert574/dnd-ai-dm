@@ -59,29 +59,7 @@ async function handleLogout() {
   
   try {
     isLoggingOut.value = true;
-    
-    // Call the logout API
-    const response = await $fetch('/api/auth/logout', {
-      method: 'POST',
-      credentials: 'include'
-    });
-
-    if (!response.success) {
-      throw new Error('Logout failed');
-    }
-    
-    // Clear auth store state
-    await auth.$reset();
-
-    // Clear all auth-related cookies
-    const authToken = useCookie('auth_token');
-    const refreshToken = useCookie('refresh_token');
-
-    authToken.value = null;
-    refreshToken.value = null;
-
-    localStorage.removeItem('auth');
-    localStorage.removeItem('pinia');
+    await auth.logout();
 
     window.location.reload();
   } catch (error) {

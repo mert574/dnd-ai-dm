@@ -28,7 +28,7 @@ function runMigration() {
             .filter(s => s.length > 0);
 
         for (const statement of statements) {
-            db.exec(`${statement  };`);
+            db.exec(`${statement};`);
         }
 
         // Record the migration

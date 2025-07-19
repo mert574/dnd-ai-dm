@@ -28,13 +28,22 @@ Rules that you must follow:
 - Use concise syntax for simple statements.
 
 **Tech Stack**
-- Frontend Framework: Vue.js with TypeScript
+- Frontend Framework: Nuxt 4 (Vue.js) with TypeScript
 - UI Libraries: TailwindCSS, styled-components
-- Data Management: TBD
-- Visualization: TBD
-- Utilities: Lodash
+- Authentication: better-auth (database sessions, NOT JWT)
+- Database: SQLite with better-sqlite3
+- State Management: Pinia
+- Utilities: Lodash, ms (for time calculations)
 - Build Tools: Vite
 - Testing: No tests
+
+**Authentication Guidelines**
+- Use better-auth client for all auth operations
+- Never implement custom JWT or session management
+- Database sessions are handled automatically
+- Time values must use ms() library: ms('7d'), ms('1h'), etc.
+- Auth endpoint: /api/auth/[...auth].ts (catch-all route)
+- Default table names: user, session, account, verification
 
 **Planning Process**
 - Create a PRD file to define requirements and scope.

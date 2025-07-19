@@ -5,15 +5,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Project Overview
 
 This is a D&D AI Dungeon Master application built with:
-- **Frontend**: Nuxt 3 (Vue 3) with TypeScript, Tailwind CSS
+- **Frontend**: Nuxt 4 (Vue 3) with TypeScript, Tailwind CSS
 - **Backend**: Nitro server with SQLite database
 - **State Management**: Pinia with persistence
-- **Authentication**: JWT-based with refresh tokens
+- **Authentication**: better-auth with database sessions (simplified from previous JWT system)
 - **External API**: Open5e integration for D&D data
 
 ## Essential Commands
 
 ```bash
+# Database Setup (First Time)
+npm run db:migrate     # Initialize app + better-auth database schema
+
 # Development
 npm run dev        # Start development server on http://localhost:3000
 
@@ -32,52 +35,47 @@ npm run generate   # Generate static site
 
 ## Architecture Overview
 
+### Authentication System (better-auth)
+- **Database sessions** stored in `auth_session` table
+- **Single API endpoint**: `/api/auth/[...auth].ts` handles all auth routes
+- **Automatic session management** - no manual token refresh needed
+- **Client integration** via `better-auth/vue` package
+- **Environment variables**: `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`
+
 ### API Structure
 All API endpoints follow a standardized response format and are located in `server/api/`:
-- **Auth endpoints**: `/api/auth/*` - Authentication (login, register, refresh, logout)
+- **Auth endpoints**: `/api/auth/[...auth]` - All authentication handled by better-auth
 - **Data endpoints**: `/api/data/*` - D&D game data and session management
 
 ### Authentication Flow
-- JWT tokens stored in HTTP-only cookies
-- Access tokens (15 min) auto-refresh before expiry
-- Three auth middleware levels: `getUser`, `requireAuth`, `requireDM`, `requireParticipant`
+- Database sessions
+- Sessions stored in SQLite `auth_session` table
+- better-auth client handles all session management automatically
+- Simplified Pinia store with better-auth integration
 
 ### Database Layer
 - SQLite with prepared statements in `server/db/`
-- Migrations in `server/db/migrations/`
-- Type-safe queries defined in `server/db/queries.ts`
+- **App migrations**: `server/db/migrations/001_initial.sql` (D&D game tables: sessions, characters, messages)
+- **Auth tables**: `user`, `session`, `account`, `verification` (created via better-auth CLI)
+- **Database setup**: Use `npm run db:migrate` (runs both app + auth migrations)
+- Type-safe queries defined in `server/db/queries.ts` for app-specific data
 
 ### State Management
-- Pinia store in `stores/auth.ts` handles user state and token refresh
-- Persisted using `@pinia-plugin-persistedstate`
-
-### Open5e Integration
-- Cached in both memory and SQLite for performance
-- Rate-limited to 100 requests/minute
-- Background cache warmup every 12 hours
+- **Pinia store** (`stores/auth.ts`)
+- Uses `better-auth/vue` client for all auth operations
+- **Persistent state** for user data only (sessions handled server-side)
 
 ## Development Guidelines
 
-### Code Style (from .cursorrules)
-- Use TypeScript with strict type checking
-- Prefer named functions over arrow functions
-- Write pure functions, avoid side effects
-- Extract reusable hooks/components (DRY)
-- Use camelCase for directories and variables
-- Favor default exports for components
-- No comments unless code is complex
+### Time Calculations
+Always use the `ms` library for time-related values.
 
-### Planning Process
-Before implementing features:
-1. Create a PRD file defining requirements and scope
-2. Document technical decisions upfront
-3. Get PRD approved before implementation
-4. Create meaningful commits during development
-5. Delete PRD file when task is complete
+### Authentication
+- Use better-auth client in components: `createAuthClient()`
+- Server-side auth via better-auth handler
+- No manual JWT or cookie management needed
 
-### Important Notes
-- **No testing framework** - Project explicitly states "Testing: No tests"
-- **Linting**: ESLint with TypeScript and Vue support for code quality
-- SSR is disabled (SPA mode)
-- Always verify auth middleware requirements for new endpoints
-- Use existing patterns for consistency
+### Database
+- Use prepared statements from `server/db/queries.ts`
+- Follow existing query patterns
+- SQLite with WAL mode enabled for performance

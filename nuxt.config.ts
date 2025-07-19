@@ -28,6 +28,14 @@ export default defineNuxtConfig({
     typeCheck: true
   },
 
+  runtimeConfig: {
+    betterAuthSecret: process.env.BETTER_AUTH_SECRET || '',
+    betterAuthUrl: process.env.BETTER_AUTH_URL || 'http://localhost:3000',
+    public: {
+      betterAuthUrl: process.env.BETTER_AUTH_URL || 'http://localhost:3000',
+    }
+  },
+
   devtools: {
     enabled: true,
 

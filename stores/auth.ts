@@ -1,223 +1,152 @@
-import { defineStore } from 'pinia';
-import type { FetchError } from 'ofetch';
+import { defineStore } from 'pinia'
+import { createAuthClient } from 'better-auth/vue'
 
 interface User {
-    id: number;
-    name: string;
-    email: string;
+    id: string
+    name: string
+    email: string
 }
 
 interface AuthState {
-    user: User | null;
-    loading: boolean;
-    backgroundLoading: boolean;
-    error: string | null;
-    tokenExpiresAt: number | null;
-    refreshTimer: NodeJS.Timeout | null;
+    user: User | null
+    loading: boolean
+    error: string | null
 }
+
+const authClient = createAuthClient({
+    baseURL: typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000'
+})
 
 export const useAuthStore = defineStore('auth', {
     state: (): AuthState => ({
         user: null,
         loading: false,
-        backgroundLoading: false,
-        error: null,
-        tokenExpiresAt: null,
-        refreshTimer: null
+        error: null
     }),
 
     persist: {
-        pick: ['user', 'tokenExpiresAt']
+        pick: ['user']
     },
 
     getters: {
         isAuthenticated: state => !!state.user,
-        isLoading: state => state.loading,
-        isBackgroundLoading: state => state.backgroundLoading
+        isLoading: state => state.loading
     },
 
     actions: {
-        setTokenExpiration(expiresIn: number) {
-            this.tokenExpiresAt = Date.now() + expiresIn;
-            
-            if (this.refreshTimer) {
-                clearTimeout(this.refreshTimer);
-            }
-
-            const refreshDelay = expiresIn - 60_000;
-            if (refreshDelay > 0) {
-                this.refreshTimer = setTimeout(async () => {
-                    this.backgroundLoading = true;
-                    try {
-                        await this.refreshToken();
-                    } finally {
-                        this.backgroundLoading = false;
-                    }
-                }, refreshDelay);
-            }
-        },
-
-        clearAuth() {
-            this.user = null;
-            this.tokenExpiresAt = null;
-            this.backgroundLoading = false;
-            if (this.refreshTimer) {
-                clearTimeout(this.refreshTimer);
-                this.refreshTimer = null;
-            }
-        },
-
-        initAuth() {
-            if (this.user && this.tokenExpiresAt) {
-                const now = Date.now();
-                if (this.tokenExpiresAt > now) {
-                    this.setTokenExpiration(this.tokenExpiresAt - now);
-                } else {
-                    this.backgroundLoading = true;
-                    this.refreshToken()
-                        .catch(() => this.clearAuth())
-                        .finally(() => {
-                            this.backgroundLoading = false;
-                        });
-                }
-            }
-        },
-
         async login(email: string, password: string) {
-            this.loading = true;
-            this.error = null;
+            this.loading = true
+            this.error = null
 
             try {
-                const response = await $fetch<{ 
-                    success: boolean; 
-                    data: { 
-                        user: User; 
-                        token: string;
-                        refreshToken: string;
-                        expiresIn: number;
-                    } 
-                }>('/api/auth/login', {
-                    method: 'POST',
-                    body: { email, password }
-                });
+                const { data, error } = await authClient.signIn.email({
+                    email,
+                    password
+                })
 
-                if (response.success) {
-                    this.user = response.data.user;
-                    this.setTokenExpiration(response.data.expiresIn);
+                if (error) {
+                    this.error = error.message || 'Login failed'
+                    throw new Error(error.message || 'Login failed')
                 }
-            } catch (error) {
-                const fetchError = error as FetchError;
-                this.error = fetchError.data?.message ?? 'Failed to login';
-                throw error;
+
+                if (data?.user) {
+                    this.user = {
+                        id: data.user.id,
+                        name: data.user.name,
+                        email: data.user.email
+                    }
+                }
+            } catch (error: unknown) {
+                const errorMessage = error instanceof Error ? error.message : 'Failed to login'
+                this.error = errorMessage
+                throw error
             } finally {
-                this.loading = false;
+                this.loading = false
             }
         },
 
         async register(name: string, email: string, password: string) {
-            this.loading = true;
-            this.error = null;
+            this.loading = true
+            this.error = null
 
             try {
-                const response = await $fetch<{ 
-                    success: boolean; 
-                    data: { 
-                        user: User; 
-                        token: string;
-                        refreshToken: string;
-                        expiresIn: number;
-                    } 
-                }>('/api/auth/register', {
-                    method: 'POST',
-                    body: { name, email, password }
-                });
+                const { data, error } = await authClient.signUp.email({
+                    name,
+                    email,
+                    password
+                })
 
-                if (response.success) {
-                    this.user = response.data.user;
-                    this.setTokenExpiration(response.data.expiresIn);
+                if (error) {
+                    this.error = error.message || 'Registration failed'
+                    throw new Error(error.message || 'Registration failed')
                 }
-            } catch (error) {
-                const fetchError = error as FetchError;
-                this.error = fetchError.data?.message ?? 'Failed to register';
-                throw error;
+
+                if (data?.user) {
+                    this.user = {
+                        id: data.user.id,
+                        name: data.user.name,
+                        email: data.user.email
+                    }
+                }
+            } catch (error: unknown) {
+                const errorMessage = error instanceof Error ? error.message : 'Failed to register'
+                this.error = errorMessage
+                throw error
             } finally {
-                this.loading = false;
+                this.loading = false
             }
         },
 
         async logout() {
-            this.loading = true;
-            this.error = null;
+            this.loading = true
+            this.error = null
 
             try {
-                await $fetch('/api/auth/logout', { method: 'POST' });
-                this.clearAuth();
-            } catch (error) {
-                const fetchError = error as FetchError;
-                this.error = fetchError.data?.message ?? 'Failed to logout';
-                throw error;
+                const { error } = await authClient.signOut()
+                
+                if (error) {
+                    this.error = error.message || 'Logout failed'
+                    throw new Error(error.message || 'Logout failed')
+                }
+
+                this.user = null
+            } catch (error: unknown) {
+                const errorMessage = error instanceof Error ? error.message : 'Failed to logout'
+                this.error = errorMessage
+                throw error
             } finally {
-                this.loading = false;
+                this.loading = false
             }
         },
 
         async fetchCurrentUser() {
-            if (this.loading) return;
-            this.loading = true;
-            this.error = null;
+            if (this.loading) return
+            this.loading = true
+            this.error = null
 
             try {
-                const response = await $fetch<{ success: boolean; data: User }>('/api/auth/me');
-                if (response.success) {
-                    this.user = response.data;
-                }
-            } catch (error) {
-                const fetchError = error as FetchError;
-                if (fetchError.status === 401) {
-                    try {
-                        const refreshed = await this.refreshToken();
-                        if (refreshed) {
-                            const response = await $fetch<{ success: boolean; data: User }>('/api/auth/me');
-                            if (response.success) {
-                                this.user = response.data;
-                            }
-                        } else {
-                            this.clearAuth();
-                        }
-                    } catch {
-                        this.error = 'Session expired. Please login again.';
-                        this.clearAuth();
+                const { data } = await authClient.getSession()
+                
+                if (data?.user) {
+                    this.user = {
+                        id: data.user.id,
+                        name: data.user.name,
+                        email: data.user.email
                     }
                 } else {
-                    this.error = fetchError.data?.message ?? 'Failed to fetch user';
-                    this.clearAuth();
+                    this.user = null
                 }
+            } catch (error: unknown) {
+                const errorMessage = error instanceof Error ? error.message : 'Failed to fetch user'
+                this.error = errorMessage
+                this.user = null
             } finally {
-                this.loading = false;
+                this.loading = false
             }
         },
 
-        async refreshToken() {
-            try {
-                const response = await $fetch<{ 
-                    success: boolean; 
-                    data: { 
-                        token: string; 
-                        expiresIn: number;
-                    } 
-                }>('/api/auth/refresh', {
-                    method: 'POST'
-                });
-
-                if (response.success) {
-                    this.setTokenExpiration(response.data.expiresIn);
-                    return true;
-                }
-                return false;
-            } catch (error) {
-                this.clearAuth();
-                throw error;
-            }
+        async initAuth() {
+            await this.fetchCurrentUser()
         }
-    },
-}); 
+    }
+}) 
