@@ -1,7 +1,7 @@
 import { resetCache } from '~/server/utils/open5e/warmup';
 import { createError } from '~/server/utils/api';
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async (_event) => {
   try {
     await resetCache();
     return { success: true, message: 'Cache reset complete' };

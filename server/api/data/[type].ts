@@ -52,11 +52,11 @@ export default defineEventHandler(async (event: H3Event) => {
     const cacheKey = slug 
       ? `${endpoint}:${slug}`
       : search
-      ? `${endpoint}:search:${search}:${limit || 'all'}`
-      : `${endpoint}:all:${limit || 'all'}`;
+      ? `${endpoint}:search:${search}:${limit ?? 'all'}`
+      : `${endpoint}:all:${limit ?? 'all'}`;
 
     // Try to get from cache first
-    const cached = await cache.get<any[]>(cacheKey);
+    const cached = await cache.get<unknown[]>(cacheKey);
     if (cached) {
       return limit ? cached.slice(0, Number(limit)) : cached;
     }
@@ -64,9 +64,9 @@ export default defineEventHandler(async (event: H3Event) => {
     // Fetch from API based on query type
     let data: unknown[];
     if (slug) {
-      data = [await client.fetchBySlug(endpoint, slug as string)];
+      data = [await client.fetchBySlug(endpoint, slug)];
     } else if (search) {
-      data = await client.search(endpoint, search as string);
+      data = await client.search(endpoint, search);
     } else {
       data = await client.fetchAll(endpoint);
     }

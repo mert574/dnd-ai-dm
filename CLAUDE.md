@@ -21,6 +21,11 @@ yarn dev        # Start development server on http://localhost:3000
 yarn build      # Build for production
 yarn preview    # Preview production build locally
 
+# Code Quality
+yarn lint       # Run ESLint to check code quality
+yarn lint:fix   # Auto-fix ESLint issues where possible
+yarn typecheck  # Run TypeScript type checking
+
 # Other
 yarn generate   # Generate static site
 ```

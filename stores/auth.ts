@@ -101,7 +101,7 @@ export const useAuthStore = defineStore('auth', {
                     this.setTokenExpiration(response.data.expiresIn);
                 }
             } catch (error: any) {
-                this.error = error.data?.error?.message || 'Failed to login';
+                this.error = error.data?.error?.message ?? 'Failed to login';
                 throw error;
             } finally {
                 this.loading = false;
@@ -131,7 +131,7 @@ export const useAuthStore = defineStore('auth', {
                     this.setTokenExpiration(response.data.expiresIn);
                 }
             } catch (error: any) {
-                this.error = error.data?.error?.message || 'Failed to register';
+                this.error = error.data?.error?.message ?? 'Failed to register';
                 throw error;
             } finally {
                 this.loading = false;
@@ -146,7 +146,7 @@ export const useAuthStore = defineStore('auth', {
                 await $fetch('/api/auth/logout', { method: 'POST' });
                 this.clearAuth();
             } catch (error: any) {
-                this.error = error.data?.error?.message || 'Failed to logout';
+                this.error = error.data?.error?.message ?? 'Failed to logout';
                 throw error;
             } finally {
                 this.loading = false;
@@ -175,12 +175,12 @@ export const useAuthStore = defineStore('auth', {
                         } else {
                             this.clearAuth();
                         }
-                    } catch (refreshError) {
+                    } catch {
                         this.error = 'Session expired. Please login again.';
                         this.clearAuth();
                     }
                 } else {
-                    this.error = error.data?.error?.message || 'Failed to fetch user';
+                    this.error = error.data?.error?.message ?? 'Failed to fetch user';
                     this.clearAuth();
                 }
             } finally {

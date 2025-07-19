@@ -59,7 +59,7 @@ export class Open5eClient {
       while (url) {
         const response = await this.get<ApiResponse<T>>(url, params);
         results.push(...response.results);
-        url = response.next || '';
+        url = response.next ?? '';
       }
 
       return results;
@@ -141,12 +141,12 @@ export class Open5eClient {
     return true;
   }
 
-  private async handleRequest(request: unknown) {
+  private async handleRequest(_request: unknown) {
     await this.checkRateLimit();
     this.rateLimitState.requests++;
   }
 
-  private handleResponse(response: unknown) {
+  private handleResponse(_response: unknown) {
     // Reset rate limit window if needed
     const now = Date.now();
     if (now - this.rateLimitState.windowStart >= this.config.rateLimit.windowMs) {
@@ -195,7 +195,7 @@ export class Open5eClient {
     if (error && typeof error === 'object') {
       const e = error as { response?: { status?: number; data?: { detail?: string } }; message?: string };
       statusCode = e.response?.status;
-      message = e.response?.data?.detail || e.message || message;
+      message = e.response?.data?.detail ?? e.message ?? message;
     }
 
     let context: unknown = undefined;

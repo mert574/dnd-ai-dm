@@ -5,7 +5,9 @@
       "Bash(git add:*)",
       "Bash(git restore:*)",
       "Bash(yarn tsc:*)",
-      "Bash(yarn typecheck)"
+      "Bash(yarn typecheck)",
+      "Bash(yarn lint)",
+      "Bash(yarn lint:*)"
     ],
     "deny": []
   }

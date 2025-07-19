@@ -1,6 +1,4 @@
 import { getDatabase } from './connection';
-import type { User, Session, Character, Message } from './types';
-import { SessionStatus, MessageType } from './types';
 
 const db = getDatabase();
 

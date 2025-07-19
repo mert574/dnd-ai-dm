@@ -51,7 +51,7 @@ export class ApiError extends H3Error {
 }
 
 // Success response helper
-export function successResponse<T>(data: T, statusCode: number = HTTP_STATUS.OK): ApiResponse<T> {
+export function successResponse<T>(data: T, _statusCode: number = HTTP_STATUS.OK): ApiResponse<T> {
     return {
         success: true,
         data
@@ -62,7 +62,7 @@ export function successResponse<T>(data: T, statusCode: number = HTTP_STATUS.OK)
 export function errorResponse(
     code: ApiErrorCode,
     message: string,
-    details?: any
+    details?: unknown
 ): ApiResponse {
     return {
         success: false,
@@ -79,16 +79,16 @@ export const createError = {
     badRequest: (message: string, details?: unknown) => 
         new ApiError(ApiErrorCode.BAD_REQUEST, message, HTTP_STATUS.BAD_REQUEST, details),
     
-    unauthorized: (message: string = 'Unauthorized') => 
+    unauthorized: (message = 'Unauthorized') => 
         new ApiError(ApiErrorCode.UNAUTHORIZED, message, HTTP_STATUS.UNAUTHORIZED),
     
-    forbidden: (message: string = 'Forbidden') => 
+    forbidden: (message = 'Forbidden') => 
         new ApiError(ApiErrorCode.FORBIDDEN, message, HTTP_STATUS.FORBIDDEN),
     
-    notFound: (message: string = 'Not Found') => 
+    notFound: (message = 'Not Found') => 
         new ApiError(ApiErrorCode.NOT_FOUND, message, HTTP_STATUS.NOT_FOUND),
     
-    internal: (message: string = 'Internal Server Error') => 
+    internal: (message = 'Internal Server Error') => 
         new ApiError(ApiErrorCode.INTERNAL_ERROR, message, HTTP_STATUS.INTERNAL_ERROR),
     
     validation: (message: string, details?: unknown) => 

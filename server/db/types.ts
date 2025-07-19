@@ -105,12 +105,10 @@ export interface Armor extends Equipment {
     stealthDisadvantage: boolean;
 }
 
-export interface SpellSlots {
-    [level: number]: {
+export type SpellSlots = Record<number, {
         total: number;
         used: number;
-    };
-}
+    }>;
 
 // Main table interfaces
 export interface User {

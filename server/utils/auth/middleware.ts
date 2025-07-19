@@ -15,7 +15,7 @@ export async function getUser(event: H3Event): Promise<User | null> {
             return null;
         }
 
-        const token = authCookie || (authHeader ? parseAuthHeader(authHeader) : null);
+        const token = authCookie ?? (authHeader ? parseAuthHeader(authHeader) : null);
         if (!token) {
             return null;
         }
@@ -34,7 +34,7 @@ export async function getUser(event: H3Event): Promise<User | null> {
 
                 try {
                     // Get new tokens
-                    const { token: newToken, expiresIn } = refreshAccessToken(refreshToken);
+                    const { token: newToken } = refreshAccessToken(refreshToken);
                     
                     // Set new auth token cookie
                     setCookie(event, COOKIE_NAMES.ACCESS_TOKEN, newToken, getAuthCookieOptions('access'));
