@@ -9,18 +9,18 @@ const envSchema = z.object({
     
     // Server Configuration
     NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
-    PORT: z.string().transform(Number).default('3000'),
+    PORT: z.string().default('3000').transform(Number),
     
     // Database Configuration
     DATABASE_PATH: z.string().default('data/game.db'),
     
     // Security Configuration
-    BCRYPT_ROUNDS: z.string().transform(Number).default('10'),
-    SESSION_CODE_LENGTH: z.string().transform(Number).default('6'),
+    BCRYPT_ROUNDS: z.string().default('10').transform(Number),
+    SESSION_CODE_LENGTH: z.string().default('6').transform(Number),
     
     // External APIs
     OPEN5E_API_URL: z.string().url().default('https://api.open5e.com'),
-    OPEN5E_RATE_LIMIT: z.string().transform(Number).default('100'),
+    OPEN5E_RATE_LIMIT: z.string().default('100').transform(Number),
 });
 
 type Env = z.infer<typeof envSchema>;
@@ -58,7 +58,7 @@ export function getEnv(): Env {
     } catch (error) {
         if (error instanceof z.ZodError) {
             console.error('❌ Environment validation failed:');
-            error.errors.forEach(err => {
+            error.issues.forEach((err: any) => {
                 console.error(`   - ${err.path.join('.')}: ${err.message}`);
             });
             throw new Error('Invalid environment configuration');

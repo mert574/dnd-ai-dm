@@ -43,7 +43,7 @@ export default defineEventHandler(async (event: H3Event) => {
     const validationResult = querySchema.safeParse(rawQuery);
     
     if (!validationResult.success) {
-      throw createError.validation('Invalid query parameters', validationResult.error.errors);
+      throw createError.validation('Invalid query parameters', validationResult.error.issues);
     }
     
     const { search, slug, limit } = validationResult.data;

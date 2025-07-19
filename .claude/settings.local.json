@@ -7,7 +7,11 @@
       "Bash(yarn tsc:*)",
       "Bash(yarn typecheck)",
       "Bash(yarn lint)",
-      "Bash(yarn lint:*)"
+      "Bash(yarn lint:*)",
+      "Bash(pnpm install:*)",
+      "Bash(pnpm:*)",
+      "Bash(timeout 10 pnpm dev)",
+      "Bash(npx vue-tsc:*)"
     ],
     "deny": []
   }

@@ -25,6 +25,10 @@ export const useAuthStore = defineStore('auth', {
         refreshTimer: null
     }),
 
+    persist: {
+        pick: ['user', 'tokenExpiresAt']
+    },
+
     getters: {
         isAuthenticated: state => !!state.user,
         isLoading: state => state.loading,

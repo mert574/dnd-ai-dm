@@ -20,7 +20,7 @@ export async function validate<T>(schema: z.Schema<T>, data: unknown): Promise<T
     } catch (error) {
         if (error instanceof z.ZodError) {
             throw createError.validation('Validation failed', {
-                errors: error.errors.map(err => ({
+                errors: error.issues.map((err: z.ZodIssue) => ({
                     path: err.path.join('.'),
                     message: err.message
                 }))
@@ -62,7 +62,7 @@ export const sessionSchemas = {
     update: z.object({
         name: z.string().min(3).max(100).optional(),
         status: z.enum(['active', 'paused', 'completed']).optional(),
-        game_state: z.record(z.unknown()).optional()
+        game_state: z.record(z.string(), z.unknown()).optional()
     })
 };
 

@@ -4,9 +4,12 @@ export default defineNuxtConfig({
   css: ['~/assets/css/tailwind.css'],
   modules: [
     '@nuxtjs/tailwindcss',
-    '@pinia/nuxt',
-    '@pinia-plugin-persistedstate/nuxt'
+    '@pinia/nuxt'
   ],
+
+  pinia: {
+    storesDirs: ['./stores/**'],
+  },
 
   app: {
     head: {
