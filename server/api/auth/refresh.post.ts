@@ -1,11 +1,12 @@
-import { createError, successResponse } from '../../utils/api';
+import { defineEventHandler, getCookie, setCookie } from 'h3';
+import { apiErrorCreators, successResponse } from '../../utils/api';
 import { refreshAccessToken } from '../../utils/jwt';
 import { getAuthCookieOptions, COOKIE_NAMES } from '../../utils/auth/cookie';
 
 export default defineEventHandler(async (event) => {
     const refreshToken = getCookie(event, COOKIE_NAMES.REFRESH_TOKEN);
     if (!refreshToken) {
-        throw createError.unauthorized('No refresh token');
+        throw apiErrorCreators.unauthorized('No refresh token');
     }
 
     try {
@@ -17,6 +18,6 @@ export default defineEventHandler(async (event) => {
         return successResponse({ token, expiresIn });
     } catch (error) {
         console.error('Token refresh error:', error);
-        throw createError.unauthorized('Invalid refresh token');
+        throw apiErrorCreators.unauthorized('Invalid refresh token');
     }
 }); 

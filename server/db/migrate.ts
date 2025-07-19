@@ -19,6 +19,9 @@ function runMigration() {
 
         // Split and run the migration
         const [upMigration] = migration.split('-- Down Migration');
+        if (!upMigration) {
+            throw new Error('Invalid migration file: missing up migration section');
+        }
         const statements = upMigration
             .split(';')
             .map(s => s.trim())

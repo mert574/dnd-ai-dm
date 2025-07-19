@@ -1,5 +1,6 @@
+import { defineEventHandler, readBody, setCookie } from 'h3';
 import { authSchemas } from '../../utils/validation';
-import { createError, successResponse } from '../../utils/api';
+import { apiErrorCreators, successResponse } from '../../utils/api';
 import { queries } from '../../db/queries';
 import { generateTokenPair } from '../../utils/jwt';
 import { verifyPassword } from '../../utils/auth';
@@ -14,7 +15,7 @@ export default defineEventHandler(async (event) => {
         const user = queries.getUserByEmail.get(data.email) as User;
 
         if (!user || !(await verifyPassword(data.password, user.password_hash))) {
-            throw createError.unauthorized('Invalid email or password');
+            throw apiErrorCreators.unauthorized('Invalid email or password');
         }
 
         const { token, refreshToken, expiresIn } = generateTokenPair(user);
@@ -34,6 +35,6 @@ export default defineEventHandler(async (event) => {
         });
     } catch (error) {
         console.error('Login error:', error);
-        throw createError.unauthorized('Invalid email or password');
+        throw apiErrorCreators.unauthorized('Invalid email or password');
     }
 }); 

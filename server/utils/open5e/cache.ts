@@ -2,11 +2,12 @@ import Database from 'better-sqlite3';
 import { join } from 'path';
 import { mkdir } from 'fs/promises';
 import { existsSync } from 'fs';
-import { Endpoint, type CacheEntry, type CacheMetadata } from './types';
+import type { Endpoint, CacheEntry, CacheMetadata } from './types';
+
 
 export class Open5eCache {
   private db: Database.Database;
-  private memoryCache: Map<string, CacheEntry<any>>;
+  private memoryCache: Map<string, CacheEntry<unknown>>;
 
   constructor() {
     // Ensure data directory exists

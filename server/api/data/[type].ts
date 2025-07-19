@@ -1,9 +1,9 @@
-import { H3Event } from 'h3';
+import type { H3Event } from 'h3';
 import { z } from 'zod';
 import { Open5eClient } from '~/server/utils/open5e/client';
 import { Open5eCache } from '~/server/utils/open5e/cache';
 import { Endpoint, Open5eError } from '~/server/utils/open5e/types';
-import { createError } from '~/server/utils/api';
+import { apiErrorCreators } from '~/server/utils/api';
 import ms from 'ms';
 
 // Initialize client and cache
@@ -33,7 +33,7 @@ export default defineEventHandler(async (event: H3Event) => {
     // Get endpoint type from URL
     const type = event.context.params?.type;
     if (!type || !validEndpoints.includes(type as Endpoint)) {
-      throw createError.badRequest(`Invalid endpoint type: ${type}`);
+      throw apiErrorCreators.badRequest(`Invalid endpoint type: ${type}`);
     }
 
     const endpoint = type as Endpoint;
@@ -43,7 +43,7 @@ export default defineEventHandler(async (event: H3Event) => {
     const validationResult = querySchema.safeParse(rawQuery);
     
     if (!validationResult.success) {
-      throw createError.validation('Invalid query parameters', validationResult.error.issues);
+      throw apiErrorCreators.validation('Invalid query parameters', validationResult.error.issues);
     }
     
     const { search, slug, limit } = validationResult.data;
@@ -85,9 +85,9 @@ export default defineEventHandler(async (event: H3Event) => {
     console.error('Open5e API Error:', error);
     
     if (error instanceof Open5eError) {
-      throw createError.badRequest(error.message);
+      throw apiErrorCreators.badRequest(error.message);
     }
     
-    throw createError.internal('Failed to fetch D&D data');
+    throw apiErrorCreators.internal('Failed to fetch D&D data');
   }
 }); 

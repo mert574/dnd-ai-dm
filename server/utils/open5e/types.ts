@@ -1,5 +1,5 @@
 // API Response Types
-export interface ApiResponse<T> {
+export interface Open5eApiResponse<T> {
   count: number;
   next: string | null;
   previous: string | null;

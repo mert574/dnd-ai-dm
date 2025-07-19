@@ -1,12 +1,12 @@
 import { ofetch } from 'ofetch';
-import {
-  OPEN5E_BASE_URL,
+import { OPEN5E_BASE_URL, Open5eError } from './types';
+import type {
   Endpoint,
-  Open5eError,
-  type Open5eClientConfig,
-  type RateLimitState,
-  type ApiResponse
+  Open5eClientConfig,
+  RateLimitState,
+  Open5eApiResponse,
 } from './types';
+
 import ms from 'ms';
 
 const DEFAULT_CONFIG: Required<Open5eClientConfig> = {
@@ -57,7 +57,7 @@ export class Open5eClient {
 
     try {
       while (url) {
-        const response = await this.get<ApiResponse<T>>(url, params);
+        const response = await this.get<Open5eApiResponse<T>>(url, params);
         results.push(...response.results);
         url = response.next ?? '';
       }

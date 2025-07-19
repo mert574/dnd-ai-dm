@@ -42,7 +42,7 @@ interface Props {
   title: string;
   loading: boolean;
   error: string | null;
-  items: Spell[] | MagicItem[] | Weapon[] | null;
+  items: Spell[] | MagicItem[] | Weapon[] | null | undefined;
   itemType: 'spell' | 'item' | 'weapon';
 }
 

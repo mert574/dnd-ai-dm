@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { createError } from './api';
+import { apiErrorCreators } from './api';
 import { getEnv } from './env';
 import type { User } from '../db/types';
 import type { Secret } from 'jsonwebtoken';
@@ -60,16 +60,16 @@ export function verifyToken(token: string, type: 'access' | 'refresh' = 'access'
         const payload = jwt.verify(token, secret as Secret) as JwtPayload;
 
         if (payload.type && payload.type !== type) {
-            throw createError.unauthorized('Invalid token type');
+            throw apiErrorCreators.unauthorized('Invalid token type');
         }
 
         return payload;
     } catch (error) {
         if (error instanceof jwt.TokenExpiredError) {
-            throw createError.unauthorized('Token expired');
+            throw apiErrorCreators.unauthorized('Token expired');
         }
         if (error instanceof jwt.JsonWebTokenError) {
-            throw createError.unauthorized('Invalid token');
+            throw apiErrorCreators.unauthorized('Invalid token');
         }
         throw error;
     }
@@ -83,13 +83,13 @@ export function refreshAccessToken(refreshToken: string): TokenPair {
 
 export function parseAuthHeader(authHeader?: string): string {
     if (!authHeader) {
-        throw createError.unauthorized('No token provided');
+        throw apiErrorCreators.unauthorized('No token provided');
     }
 
     const [type, token] = authHeader.split(' ');
     
     if (type !== 'Bearer' || !token) {
-        throw createError.unauthorized('Invalid token format');
+        throw apiErrorCreators.unauthorized('Invalid token format');
     }
 
     return token;

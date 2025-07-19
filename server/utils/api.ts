@@ -75,7 +75,7 @@ export function errorResponse(
 }
 
 // Common error creators
-export const createError = {
+export const apiErrorCreators = {
     badRequest: (message: string, details?: unknown) => 
         new ApiError(ApiErrorCode.BAD_REQUEST, message, HTTP_STATUS.BAD_REQUEST, details),
     

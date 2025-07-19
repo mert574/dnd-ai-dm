@@ -1,5 +1,6 @@
+import { defineEventHandler } from 'h3';
 import { resetCache } from '~/server/utils/open5e/warmup';
-import { createError } from '~/server/utils/api';
+import { apiErrorCreators } from '~/server/utils/api';
 
 export default defineEventHandler(async (_event) => {
   try {
@@ -7,6 +8,6 @@ export default defineEventHandler(async (_event) => {
     return { success: true, message: 'Cache reset complete' };
   } catch (error) {
     console.error('Failed to reset cache:', error);
-    throw createError.internal('Failed to reset cache');
+    throw apiErrorCreators.internal('Failed to reset cache');
   }
 }); 

@@ -25,7 +25,7 @@
               required
               class="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-700 bg-gray-800 text-gray-300 placeholder-gray-500 focus:outline-none focus:ring-red-500 focus:border-red-500 focus:z-10"
               placeholder="Email address"
-            />
+            >
           </div>
           <div>
             <label for="password" class="sr-only">Password</label>
@@ -37,7 +37,7 @@
               required
               class="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-700 bg-gray-800 text-gray-300 placeholder-gray-500 focus:outline-none focus:ring-red-500 focus:border-red-500 focus:z-10"
               placeholder="Password"
-            />
+            >
           </div>
         </div>
 

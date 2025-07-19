@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { createError } from './api';
+import { apiErrorCreators } from './api';
 
 // Common validation schemas
 export const commonSchemas = {
@@ -19,7 +19,7 @@ export async function validate<T>(schema: z.Schema<T>, data: unknown): Promise<T
         return await schema.parseAsync(data);
     } catch (error) {
         if (error instanceof z.ZodError) {
-            throw createError.validation('Validation failed', {
+            throw apiErrorCreators.validation('Validation failed', {
                 errors: error.issues.map((err: z.ZodIssue) => ({
                     path: err.path.join('.'),
                     message: err.message

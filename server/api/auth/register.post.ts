@@ -1,5 +1,6 @@
+import { defineEventHandler, readBody, setCookie } from 'h3';
 import { userSchemas } from '../../utils/validation';
-import { createError, successResponse, HTTP_STATUS } from '../../utils/api';
+import { apiErrorCreators, successResponse, HTTP_STATUS } from '../../utils/api';
 import { queries } from '../../db/queries';
 import { generateTokenPair } from '../../utils/jwt';
 import { hashPassword } from '../../utils/auth';
@@ -14,12 +15,12 @@ export default defineEventHandler(async (event) => {
 
         const existingUser = queries.getUserByEmail.get(data.email);
         if (existingUser) {
-            throw createError.badRequest('Email already registered');
+            throw apiErrorCreators.badRequest('Email already registered');
         }
 
         const password_hash = await hashPassword(data.password);
         if (!password_hash) {
-            throw createError.internal('Failed to hash password');
+            throw apiErrorCreators.internal('Failed to hash password');
         }
 
         const user = queries.createUser.get({
@@ -29,7 +30,7 @@ export default defineEventHandler(async (event) => {
         }) as User;
 
         if (!user) {
-            throw createError.internal('Failed to create user');
+            throw apiErrorCreators.internal('Failed to create user');
         }
 
         const { token, refreshToken, expiresIn } = generateTokenPair(user);
@@ -52,14 +53,14 @@ export default defineEventHandler(async (event) => {
 
         if (error instanceof Error) {
             if (error.message === 'Email already registered') {
-                throw createError.badRequest(error.message);
+                throw apiErrorCreators.badRequest(error.message);
             }
             
             if (error.message.includes('Failed to hash password')) {
-                throw createError.internal('Error processing password');
+                throw apiErrorCreators.internal('Error processing password');
             }
         }
         
-        throw createError.internal('Failed to create user');
+        throw apiErrorCreators.internal('Failed to create user');
     }
 }); 

@@ -1,5 +1,5 @@
-import { H3Event } from 'h3';
-import { createError } from '../api';
+import type { H3Event } from 'h3';
+import { apiErrorCreators } from '../api';
 import { queries } from '../../db/queries';
 import { verifyToken, parseAuthHeader, refreshAccessToken } from '../jwt';
 import { getAuthCookieOptions, COOKIE_NAMES } from './cookie';
@@ -60,7 +60,7 @@ export async function getUser(event: H3Event): Promise<User | null> {
 export async function requireAuth(event: H3Event): Promise<User> {
     const user = await getUser(event);
     if (!user) {
-        throw createError.unauthorized();
+        throw apiErrorCreators.unauthorized();
     }
     return user;
 }
@@ -70,18 +70,18 @@ export async function requireDM(event: H3Event): Promise<{ user: User; session: 
     const sessionId = event.context.params?.sessionId;
     
     if (!sessionId) {
-        throw createError.badRequest('Session ID is required');
+        throw apiErrorCreators.badRequest('Session ID is required');
     }
 
     try {
         const session = queries.getSessionById.get(sessionId) as Session;
         if (!session || session.user_id !== user.id) {
-            throw createError.forbidden('Only the DM can perform this action');
+            throw apiErrorCreators.forbidden('Only the DM can perform this action');
         }
         return { user, session };
     } catch (error) {
         console.error('Error checking DM role:', error);
-        throw createError.internal();
+        throw apiErrorCreators.internal();
     }
 }
 
@@ -95,13 +95,13 @@ export async function requireParticipant(event: H3Event): Promise<{
     const sessionId = event.context.params?.sessionId;
     
     if (!sessionId) {
-        throw createError.badRequest('Session ID is required');
+        throw apiErrorCreators.badRequest('Session ID is required');
     }
 
     try {
         const session = queries.getSessionById.get(sessionId) as Session;
         if (!session) {
-            throw createError.notFound('Session not found');
+            throw apiErrorCreators.notFound('Session not found');
         }
 
         if (session.user_id === user.id) {
@@ -112,12 +112,12 @@ export async function requireParticipant(event: H3Event): Promise<{
         const character = characters.find(c => c.user_id === user.id);
 
         if (!character) {
-            throw createError.forbidden('You are not a participant in this session');
+            throw apiErrorCreators.forbidden('You are not a participant in this session');
         }
 
         return { user, session, character, role: 'player' };
     } catch (error) {
         console.error('Error checking session participation:', error);
-        throw createError.internal();
+        throw apiErrorCreators.internal();
     }
 } 

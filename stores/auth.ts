@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import type { FetchError } from 'ofetch';
 
 interface User {
     id: number;
@@ -104,8 +105,9 @@ export const useAuthStore = defineStore('auth', {
                     this.user = response.data.user;
                     this.setTokenExpiration(response.data.expiresIn);
                 }
-            } catch (error: any) {
-                this.error = error.data?.error?.message ?? 'Failed to login';
+            } catch (error) {
+                const fetchError = error as FetchError;
+                this.error = fetchError.data?.message ?? 'Failed to login';
                 throw error;
             } finally {
                 this.loading = false;
@@ -134,8 +136,9 @@ export const useAuthStore = defineStore('auth', {
                     this.user = response.data.user;
                     this.setTokenExpiration(response.data.expiresIn);
                 }
-            } catch (error: any) {
-                this.error = error.data?.error?.message ?? 'Failed to register';
+            } catch (error) {
+                const fetchError = error as FetchError;
+                this.error = fetchError.data?.message ?? 'Failed to register';
                 throw error;
             } finally {
                 this.loading = false;
@@ -149,8 +152,9 @@ export const useAuthStore = defineStore('auth', {
             try {
                 await $fetch('/api/auth/logout', { method: 'POST' });
                 this.clearAuth();
-            } catch (error: any) {
-                this.error = error.data?.error?.message ?? 'Failed to logout';
+            } catch (error) {
+                const fetchError = error as FetchError;
+                this.error = fetchError.data?.message ?? 'Failed to logout';
                 throw error;
             } finally {
                 this.loading = false;
@@ -167,8 +171,9 @@ export const useAuthStore = defineStore('auth', {
                 if (response.success) {
                     this.user = response.data;
                 }
-            } catch (error: any) {
-                if (error.status === 401) {
+            } catch (error) {
+                const fetchError = error as FetchError;
+                if (fetchError.status === 401) {
                     try {
                         const refreshed = await this.refreshToken();
                         if (refreshed) {
@@ -184,7 +189,7 @@ export const useAuthStore = defineStore('auth', {
                         this.clearAuth();
                     }
                 } else {
-                    this.error = error.data?.error?.message ?? 'Failed to fetch user';
+                    this.error = fetchError.data?.message ?? 'Failed to fetch user';
                     this.clearAuth();
                 }
             } finally {

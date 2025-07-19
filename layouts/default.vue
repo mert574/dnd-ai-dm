@@ -9,9 +9,9 @@
           <template v-if="auth.isAuthenticated">
             <span class="text-gray-300">{{ auth.user?.name }}</span>
             <button
-              @click="handleLogout"
               class="text-gray-300 hover:text-red-500 transition-colors"
               :disabled="isLoggingOut"
+              @click="handleLogout"
             >
               {{ isLoggingOut ? 'Logging out...' : 'Logout' }}
             </button>
