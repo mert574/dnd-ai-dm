@@ -15,19 +15,19 @@ This is a D&D AI Dungeon Master application built with:
 
 ```bash
 # Development
-yarn dev        # Start development server on http://localhost:3000
+pnpm dev        # Start development server on http://localhost:3000
 
 # Production
-yarn build      # Build for production
-yarn preview    # Preview production build locally
+pnpm build      # Build for production
+pnpm preview    # Preview production build locally
 
 # Code Quality
-yarn lint       # Run ESLint to check code quality
-yarn lint:fix   # Auto-fix ESLint issues where possible
-yarn typecheck  # Run TypeScript type checking
+pnpm lint       # Run ESLint to check code quality
+pnpm lint:fix   # Auto-fix ESLint issues where possible
+pnpm typecheck  # Run TypeScript type checking
 
 # Other
-yarn generate   # Generate static site
+pnpm generate   # Generate static site
 ```
 
 ## Architecture Overview
