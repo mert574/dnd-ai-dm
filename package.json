@@ -5,10 +5,15 @@
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
+    "start": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "db:migrate": "tsx server/db/migrate.ts && npx @better-auth/cli@latest migrate --config server/utils/better-auth.ts",
+    "db:migrate:up": "tsx server/db/migrate.ts up && npx @better-auth/cli@latest migrate --config server/utils/better-auth.ts",
+    "db:migrate:down": "tsx server/db/migrate.ts down",
+    "db:migrate:down:all": "tsx server/db/migrate.ts down:all",
+    "open5e:init": "tsx scripts/init-open5e.ts",
     "typecheck": "vue-tsc --noEmit",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"

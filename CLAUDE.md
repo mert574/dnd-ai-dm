@@ -79,3 +79,7 @@ Always use the `ms` library for time-related values.
 - Use prepared statements from `server/db/queries.ts`
 - Follow existing query patterns
 - SQLite with WAL mode enabled for performance
+
+## Code Best Practices
+
+- Don't add comments to code unless it's necessary.

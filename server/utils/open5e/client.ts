@@ -54,10 +54,12 @@ export class Open5eClient {
   ): Promise<T[]> {
     let url = `/${endpoint}`;
     const results: T[] = [];
+    
+    const queryParams = { ...params, limit: '1500' };
 
     try {
       while (url) {
-        const response = await this.get<Open5eApiResponse<T>>(url, params);
+        const response = await this.get<Open5eApiResponse<T>>(url, queryParams);
         results.push(...response.results);
         url = response.next ?? '';
       }
