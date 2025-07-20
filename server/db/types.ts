@@ -120,12 +120,21 @@ export interface User {
     updatedAt: Timestamp;
 }
 
+export interface CampaignCharacter {
+    id: number;
+    name: string;
+    userId: string;
+    class: string;
+    level: number;
+}
+
 export interface Campaign {
     id: string;
     name: string;
     status: CampaignStatus;
     gameState: GameState | null;
     userId: string;
+    characters?: CampaignCharacter[];
     createdAt: Timestamp;
     updatedAt: Timestamp;
 }

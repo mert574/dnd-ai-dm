@@ -1,5 +1,5 @@
-import { CampaignDataStore, type CampaignRow, type CreateCampaignParams, type UpdateCampaignStatusParams } from '../datastores/campaign.datastore';
-import type { Campaign, CampaignStatus } from '../db/types';
+import { CampaignDataStore, type CampaignRow, type CharacterRow, type CreateCampaignParams, type UpdateCampaignStatusParams } from '../datastores/campaign.datastore';
+import type { Campaign, CampaignStatus, CampaignCharacter } from '../db/types';
 import { mapKeys, camelCase } from 'lodash-es';
 import { parseJson } from '../utils/json';
 
@@ -55,7 +55,7 @@ export class CampaignService {
 
   async getByUserId(userId: string): Promise<Campaign[]> {
     const rows = this.dataStore.getByUserId(userId);
-    return rows.map(row => this.toCampaign(row));
+    return Promise.all(rows.map(async row => this.toCampaignWithCharacters(row)));
   }
 
   async getByStatus(status: CampaignStatus): Promise<Campaign[]> {
@@ -79,6 +79,21 @@ export class CampaignService {
       ...mapped,
       gameState: parseJson(row.game_state)
     } as Campaign;
+  }
+
+  private async toCampaignWithCharacters(row: CampaignRow): Promise<Campaign> {
+    const campaign = this.toCampaign(row);
+    const characterRows = this.dataStore.getCharactersByCampaignId(campaign.id);
+    
+    campaign.characters = characterRows.map((charRow: CharacterRow) => ({
+      id: charRow.id,
+      name: charRow.name,
+      userId: charRow.user_id,
+      class: charRow.class,
+      level: charRow.level
+    })) as CampaignCharacter[];
+    
+    return campaign;
   }
 }
 

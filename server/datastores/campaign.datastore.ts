@@ -12,6 +12,14 @@ export interface CampaignRow {
   dm_name?: string;
 }
 
+export interface CharacterRow {
+  id: number;
+  name: string;
+  user_id: string;
+  class: string;
+  level: number;
+}
+
 export interface CreateCampaignParams {
   campaignCode: string;
   name: string;
@@ -53,6 +61,13 @@ export class CampaignDataStore {
     ORDER BY created_at DESC
   `);
 
+  private getCampaignCharactersStmt = this.db.prepare(`
+    SELECT id, name, user_id, class, level
+    FROM characters
+    WHERE campaign_id = ? AND is_active = 1
+    ORDER BY name
+  `);
+
   private getCampaignsByStatusStmt = this.db.prepare(`
     SELECT c.*, u.name as dm_name
     FROM campaigns c
@@ -79,6 +94,10 @@ export class CampaignDataStore {
 
   getByStatus(status: CampaignStatus): CampaignRow[] {
     return this.getCampaignsByStatusStmt.all(status) as CampaignRow[];
+  }
+
+  getCharactersByCampaignId(campaignId: string): CharacterRow[] {
+    return this.getCampaignCharactersStmt.all(campaignId) as CharacterRow[];
   }
 
   generateCampaignCode(): string {
