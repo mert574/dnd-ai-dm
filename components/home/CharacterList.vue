@@ -36,6 +36,7 @@
           <div class="flex gap-2">
             <button 
               class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm transition-colors"
+              @click="handleViewCharacter(character.id)"
             >
               View
             </button>
@@ -49,11 +50,19 @@
         </div>
       </div>
     </div>
+
+    <!-- Character Modal -->
+    <CharacterModal 
+      :is-open="isModalOpen"
+      :character-id="selectedCharacterId"
+      @close="closeModal"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import type { Character } from '~/server/db/types';
+import CharacterModal from '~/components/CharacterModal.vue';
 
 interface Props {
   characters?: Character[];
@@ -64,4 +73,17 @@ defineProps<Props>();
 defineEmits<{
   deleteCharacter: [id: number];
 }>();
+
+const isModalOpen = ref(false);
+const selectedCharacterId = ref<number | null>(null);
+
+function handleViewCharacter(characterId: number) {
+  selectedCharacterId.value = characterId;
+  isModalOpen.value = true;
+}
+
+function closeModal() {
+  isModalOpen.value = false;
+  selectedCharacterId.value = null;
+}
 </script>
