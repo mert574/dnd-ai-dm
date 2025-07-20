@@ -115,19 +115,19 @@ export interface User {
     id: number;
     name: string;
     email: string;
-    password_hash: string;
-    created_at: Timestamp;
-    updated_at: Timestamp;
+    passwordHash: string;
+    createdAt: Timestamp;
+    updatedAt: Timestamp;
 }
 
 export interface Campaign {
     id: string;
     name: string;
     status: CampaignStatus;
-    game_state: GameState | null;
-    user_id: string;
-    created_at: Timestamp;
-    updated_at: Timestamp;
+    gameState: GameState | null;
+    userId: string;
+    createdAt: Timestamp;
+    updatedAt: Timestamp;
 }
 
 export interface Character {
@@ -151,20 +151,20 @@ export interface Character {
     charisma: number;
 
     // Health
-    max_hp: number;
-    current_hp: number;
-    temporary_hp: number;
+    maxHp: number;
+    currentHp: number;
+    temporaryHp: number;
 
     // Combat
-    armor_class: number;
+    armorClass: number;
     initiative: number;
     speed: number;
-    hit_dice: string;
+    hitDice: string;
 
     // Proficiencies & Features
-    proficiency_bonus: number;
-    saving_throws: SavingThrow[] | null;
-    skill_proficiencies: Skill[] | null;
+    proficiencyBonus: number;
+    savingThrows: SavingThrow[] | null;
+    skillProficiencies: Skill[] | null;
     languages: string[] | null;
     features: Feature[] | null;
 
@@ -175,29 +175,29 @@ export interface Character {
     gold: number;  // Gold pieces (gp)
 
     // Magic
-    spellcasting_ability?: SpellcastingAbility;
-    spell_slots: SpellSlots | null;
-    spells_known: string[] | null;
-    prepared_spells: string[] | null;
+    spellcastingAbility?: SpellcastingAbility;
+    spellSlots: SpellSlots | null;
+    spellsKnown: string[] | null;
+    preparedSpells: string[] | null;
 
     // Personality
-    personality_traits?: string;
+    personalityTraits?: string;
     ideals?: string;
     bonds?: string;
     flaws?: string;
 
     // Metadata
-    user_id: string;
-    campaign_id?: string;
-    is_active: boolean;
-    created_at: Timestamp;
-    updated_at: Timestamp;
+    userId: string;
+    campaignId?: string;
+    isActive: boolean;
+    createdAt: Timestamp;
+    updatedAt: Timestamp;
 }
 
 export interface Message {
     id: number;
     content: string;
     type: MessageType;
-    campaign_id: string;
-    created_at: Timestamp;
+    campaignId: string;
+    createdAt: Timestamp;
 } 

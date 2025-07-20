@@ -1,5 +1,15 @@
 import { Open5eClient } from './client';
 import { Open5eDataStore } from './store';
+import type { 
+  Open5eRace, 
+  Open5eClass, 
+  Open5eBackground, 
+  Open5eSpell, 
+  Open5eMonster, 
+  Open5eWeapon, 
+  Open5eMagicItem, 
+  Open5eFeat 
+} from './store';
 import { Endpoint } from './types';
 
 /**
@@ -53,56 +63,56 @@ export async function initializeOpen5eData() {
 
 async function loadRaces(client: Open5eClient, store: Open5eDataStore) {
   console.log('Loading races...');
-  const races = await client.fetchAll(Endpoint.Races);
+  const races = await client.fetchAll<Open5eRace>(Endpoint.Races);
   store.storeRaces(races);
   console.log(`  Loaded ${races.length} races`);
 }
 
 async function loadClasses(client: Open5eClient, store: Open5eDataStore) {
   console.log('Loading classes...');
-  const classes = await client.fetchAll(Endpoint.Classes);
+  const classes = await client.fetchAll<Open5eClass>(Endpoint.Classes);
   store.storeClasses(classes);
   console.log(`  Loaded ${classes.length} classes`);
 }
 
 async function loadBackgrounds(client: Open5eClient, store: Open5eDataStore) {
   console.log('Loading backgrounds...');
-  const backgrounds = await client.fetchAll(Endpoint.Backgrounds);
+  const backgrounds = await client.fetchAll<Open5eBackground>(Endpoint.Backgrounds);
   store.storeBackgrounds(backgrounds);
   console.log(`  Loaded ${backgrounds.length} backgrounds`);
 }
 
 async function loadSpells(client: Open5eClient, store: Open5eDataStore) {
   console.log('Loading spells...');
-  const spells = await client.fetchAll(Endpoint.Spells);
+  const spells = await client.fetchAll<Open5eSpell>(Endpoint.Spells);
   store.storeSpells(spells);
   console.log(`  Loaded ${spells.length} spells`);
 }
 
 async function loadMonsters(client: Open5eClient, store: Open5eDataStore) {
   console.log('Loading monsters...');
-  const monsters = await client.fetchAll(Endpoint.Monsters);
+  const monsters = await client.fetchAll<Open5eMonster>(Endpoint.Monsters);
   store.storeMonsters(monsters);
   console.log(`  Loaded ${monsters.length} monsters`);
 }
 
 async function loadWeapons(client: Open5eClient, store: Open5eDataStore) {
   console.log('Loading weapons...');
-  const weapons = await client.fetchAll(Endpoint.Weapons);
+  const weapons = await client.fetchAll<Open5eWeapon>(Endpoint.Weapons);
   store.storeWeapons(weapons);
   console.log(`  Loaded ${weapons.length} weapons`);
 }
 
 async function loadMagicItems(client: Open5eClient, store: Open5eDataStore) {
   console.log('Loading magic items...');
-  const items = await client.fetchAll(Endpoint.MagicItems);
+  const items = await client.fetchAll<Open5eMagicItem>(Endpoint.MagicItems);
   store.storeMagicItems(items);
   console.log(`  Loaded ${items.length} magic items`);
 }
 
 async function loadFeats(client: Open5eClient, store: Open5eDataStore) {
   console.log('Loading feats...');
-  const feats = await client.fetchAll(Endpoint.Feats);
+  const feats = await client.fetchAll<Open5eFeat>(Endpoint.Feats);
   store.storeFeats(feats);
   console.log(`  Loaded ${feats.length} feats`);
 }

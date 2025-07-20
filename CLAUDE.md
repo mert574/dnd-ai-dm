@@ -84,3 +84,24 @@ Always use the `ms` library for time-related values.
 
 - Don't add comments to code unless it's necessary.
 - `@typescript-eslint/no-explicit-any` is set to error. don't use any type.
+- Prefer named function declarations over anonymous arrow functions for multi-line functions:
+  ```javascript
+  // Good: Named function declaration for multi-line
+  async function handleCreateCampaign() {
+    const campaign = await createCampaign(createForm.value);
+    if (campaign) {
+      closeCreateModal();
+    }
+  }
+  
+  // Acceptable: Arrow functions for one-liners
+  const users = data.filter(user => user.active);
+  ```
+
+## Pre-Commit Checks
+
+- Run `npm run typecheck` and `npm run lint` before calling work done/fixed.
+
+## Claude Guidance
+
+- Never run dev server (npm run dev) by yourself. Always ask USER to run when needed.

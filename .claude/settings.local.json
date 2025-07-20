@@ -12,7 +12,11 @@
       "Bash(pnpm:*)",
       "Bash(timeout 10 pnpm dev)",
       "Bash(npx vue-tsc:*)",
-      "Bash(npx npm-check-updates:*)"
+      "Bash(npx npm-check-updates:*)",
+      "WebFetch(domain:api.open5e.com)",
+      "Bash(npm run*)",
+      "Bash(sqlite3:*)",
+      "Bash(taskkill:*)"
     ],
     "deny": []
   }

@@ -1,5 +1,7 @@
 import { Open5eDataStore } from '../utils/open5e/store';
 import type { LoadStatus, RaceRow, ClassRow, BackgroundRow, SpellRow, MonsterRow, WeaponRow, MagicItemRow, FeatRow, SearchResult } from '../utils/open5e/store';
+import { mapKeys, camelCase } from 'lodash-es';
+import { parseJson } from '../utils/json';
 
 // Types for the data we return
 export interface Race {
@@ -90,7 +92,7 @@ export interface Monster {
   cr: number;
   actions: Array<{ name: string; desc: string; attack_bonus?: number; damage_dice?: string }>;
   specialAbilities: Array<{ name: string; desc: string }>;
-  // ... other fields as needed
+
 }
 
 export interface Weapon {
@@ -132,89 +134,89 @@ class Open5eService {
   // Races
   async getRaces(): Promise<Race[]> {
     const rows = this.store.getRaces();
-    return rows.map(this.mapRace);
+    return rows.map(row => this.toRace(row));
   }
 
   async getRaceBySlug(slug: string): Promise<Race | null> {
     const row = this.store.getRaceBySlug(slug);
-    return row ? this.mapRace(row) : null;
+    return row ? this.toRace(row) : null;
   }
 
   // Classes
   async getClasses(): Promise<Class[]> {
     const rows = this.store.getClasses();
-    return rows.map(this.mapClass);
+    return rows.map(row => this.toClass(row));
   }
 
   async getClassBySlug(slug: string): Promise<Class | null> {
     const row = this.store.getClassBySlug(slug);
-    return row ? this.mapClass(row) : null;
+    return row ? this.toClass(row) : null;
   }
 
   // Backgrounds
   async getBackgrounds(): Promise<Background[]> {
     const rows = this.store.getBackgrounds();
-    return rows.map(this.mapBackground);
+    return rows.map(row => this.toBackground(row));
   }
 
   async getBackgroundBySlug(slug: string): Promise<Background | null> {
     const row = this.store.getBackgroundBySlug(slug);
-    return row ? this.mapBackground(row) : null;
+    return row ? this.toBackground(row) : null;
   }
 
   // Spells
   async getSpells(options?: { level?: number; school?: string; class?: string }): Promise<Spell[]> {
     const rows = this.store.getSpells(options);
-    return rows.map(this.mapSpell);
+    return rows.map(row => this.toSpell(row));
   }
 
   async getSpellBySlug(slug: string): Promise<Spell | null> {
     const row = this.store.getSpellBySlug(slug);
-    return row ? this.mapSpell(row) : null;
+    return row ? this.toSpell(row) : null;
   }
 
   // Monsters
   async getMonsters(options?: { cr?: number; type?: string }): Promise<Monster[]> {
     const rows = this.store.getMonsters(options);
-    return rows.map(this.mapMonster);
+    return rows.map(row => this.toMonster(row));
   }
 
   async getMonsterBySlug(slug: string): Promise<Monster | null> {
     const row = this.store.getMonsterBySlug(slug);
-    return row ? this.mapMonster(row) : null;
+    return row ? this.toMonster(row) : null;
   }
 
   // Weapons
   async getWeapons(category?: string): Promise<Weapon[]> {
     const rows = this.store.getWeapons(category);
-    return rows.map(this.mapWeapon);
+    return rows.map(row => this.toWeapon(row));
   }
 
   async getWeaponBySlug(slug: string): Promise<Weapon | null> {
     const row = this.store.getWeaponBySlug(slug);
-    return row ? this.mapWeapon(row) : null;
+    return row ? this.toWeapon(row) : null;
   }
 
   // Magic Items
   async getMagicItems(rarity?: string): Promise<MagicItem[]> {
     const rows = this.store.getMagicItems(rarity);
-    return rows.map(this.mapMagicItem);
+    return rows.map(row => this.toMagicItem(row));
   }
 
   async getMagicItemBySlug(slug: string): Promise<MagicItem | null> {
     const row = this.store.getMagicItemBySlug(slug);
-    return row ? this.mapMagicItem(row) : null;
+    return row ? this.toMagicItem(row) : null;
   }
 
   // Feats
   async getFeats(): Promise<Feat[]> {
     const rows = this.store.getFeats();
-    return rows.map(this.mapFeat);
+    return rows.map(row => this.toFeat(row));
   }
 
   async getFeatBySlug(slug: string): Promise<Feat | null> {
     const row = this.store.getFeatBySlug(slug);
-    return row ? this.mapFeat(row) : null;
+    return row ? this.toFeat(row) : null;
   }
 
   // Search across all data
@@ -227,144 +229,67 @@ class Open5eService {
     return this.store.getAllLoadStatus();
   }
 
-  // Mapping functions
-  private mapRace(row: RaceRow): Race {
-    return {
-      slug: row.slug,
-      name: row.name,
-      description: row.description,
-      abilityScores: JSON.parse(row.ability_scores || '[]'),
-      age: row.age,
-      alignment: row.alignment,
-      size: row.size,
-      speed: JSON.parse(row.speed || '{}'),
-      languages: row.languages,
-      vision: row.vision,
-      traits: row.traits,
-      subraces: JSON.parse(row.subraces || '[]')
-    };
-  }
-
-  private mapClass(row: ClassRow): Class {
-    return {
-      slug: row.slug,
-      name: row.name,
-      description: row.description,
-      hitDice: row.hit_dice,
-      hpAt1stLevel: row.hp_at_1st_level,
-      hpAtHigherLevels: row.hp_at_higher_levels,
-      profArmor: row.prof_armor,
-      profWeapons: row.prof_weapons,
-      profTools: row.prof_tools,
-      profSavingThrows: row.prof_saving_throws,
-      profSkills: row.prof_skills,
-      equipment: row.equipment,
-      tableData: row.table_data,
-      spellcastingAbility: row.spellcasting_ability,
-      subtypesName: row.subtypes_name,
-      archetypes: JSON.parse(row.archetypes || '[]')
-    };
-  }
-
-  private mapBackground(row: BackgroundRow): Background {
-    return {
-      slug: row.slug,
-      name: row.name,
-      description: row.description,
-      skillProficiencies: row.skill_proficiencies,
-      toolProficiencies: row.tool_proficiencies,
-      languages: row.languages,
-      equipment: row.equipment,
-      feature: row.feature,
-      featureDesc: row.feature_desc,
-      suggestedCharacteristics: row.suggested_characteristics
-    };
-  }
-
-  private mapSpell(row: SpellRow): Spell {
-    return {
-      slug: row.slug,
-      name: row.name,
-      description: row.description,
-      higherLevel: row.higher_level,
-      range: row.range,
-      components: row.components,
-      material: row.material,
-      ritual: Boolean(row.ritual),
-      duration: row.duration,
-      concentration: Boolean(row.concentration),
-      castingTime: row.casting_time,
-      level: row.level,
-      school: row.school,
-      classes: row.classes,
-      spellLists: JSON.parse(row.spell_lists || '[]')
-    };
-  }
-
-  private mapMonster(row: MonsterRow): Monster {
-    return {
-      slug: row.slug,
-      name: row.name,
-      description: row.description,
-      size: row.size,
-      type: row.type,
-      subtype: row.subtype,
-      alignment: row.alignment,
-      armorClass: row.armor_class,
-      armorDesc: row.armor_desc,
-      hitPoints: row.hit_points,
-      hitDice: row.hit_dice,
-      speed: JSON.parse(row.speed || '{}'),
-      strength: row.strength,
-      dexterity: row.dexterity,
-      constitution: row.constitution,
-      intelligence: row.intelligence,
-      wisdom: row.wisdom,
-      charisma: row.charisma,
-      challengeRating: row.challenge_rating,
-      cr: row.cr,
-      actions: JSON.parse(row.actions || '[]'),
-      specialAbilities: JSON.parse(row.special_abilities || '[]')
-    };
-  }
-
-  private mapWeapon(row: WeaponRow): Weapon {
-    return {
-      slug: row.slug,
-      name: row.name,
-      description: row.description,
-      category: row.category,
-      cost: row.cost,
-      damageDice: row.damage_dice,
-      damageType: row.damage_type,
-      weight: row.weight,
-      properties: JSON.parse(row.properties || '[]')
-    };
-  }
-
-  private mapMagicItem(row: MagicItemRow): MagicItem {
-    return {
-      slug: row.slug,
-      name: row.name,
-      description: row.description,
-      type: row.type,
-      rarity: row.rarity,
-      requiresAttunement: row.requires_attunement
-    };
-  }
-
-  private mapFeat(row: FeatRow): Feat {
-    return {
-      slug: row.slug,
-      name: row.name,
-      description: row.description,
-      prerequisite: row.prerequisite,
-      effects: row.effects
-    };
-  }
 
   close() {
     this.store.close();
+  }
+
+  private toRace(row: RaceRow): Race {
+    const mapped = mapKeys(row, (_, key) => camelCase(key));
+    return {
+      ...mapped,
+      abilityScores: parseJson(row.ability_scores),
+      speed: parseJson(row.speed),
+      subraces: parseJson(row.subraces)
+    } as Race;
+  }
+
+  private toClass(row: ClassRow): Class {
+    const mapped = mapKeys(row, (_, key) => camelCase(key));
+    return {
+      ...mapped,
+      archetypes: parseJson(row.archetypes)
+    } as Class;
+  }
+
+  private toBackground(row: BackgroundRow): Background {
+    return mapKeys(row, (_, key) => camelCase(key)) as unknown as Background;
+  }
+
+  private toSpell(row: SpellRow): Spell {
+    const mapped = mapKeys(row, (_, key) => camelCase(key));
+    return {
+      ...mapped,
+      ritual: Boolean(row.ritual),
+      concentration: Boolean(row.concentration),
+      spellLists: parseJson(row.spell_lists)
+    } as Spell;
+  }
+
+  private toMonster(row: MonsterRow): Monster {
+    const mapped = mapKeys(row, (_, key) => camelCase(key));
+    return {
+      ...mapped,
+      speed: parseJson(row.speed),
+      actions: parseJson(row.actions),
+      specialAbilities: parseJson(row.special_abilities)
+    } as Monster;
+  }
+
+  private toWeapon(row: WeaponRow): Weapon {
+    const mapped = mapKeys(row, (_, key) => camelCase(key));
+    return {
+      ...mapped,
+      properties: parseJson(row.properties)
+    } as Weapon;
+  }
+
+  private toMagicItem(row: MagicItemRow): MagicItem {
+    return mapKeys(row, (_, key) => camelCase(key)) as unknown as MagicItem;
+  }
+
+  private toFeat(row: FeatRow): Feat {
+    return mapKeys(row, (_, key) => camelCase(key)) as unknown as Feat;
   }
 }
 

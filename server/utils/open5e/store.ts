@@ -3,6 +3,169 @@ import { join } from 'path';
 import { mkdir } from 'fs/promises';
 import { existsSync } from 'fs';
 
+// Open5e API response types
+export interface Open5eRace {
+  slug: string;
+  name: string;
+  desc: string;
+  asi: Record<string, unknown>;
+  age: string;
+  alignment: string;
+  size: string;
+  speed: Record<string, unknown>;
+  languages: string;
+  vision: string;
+  traits: string;
+  subraces: unknown[];
+  document__slug: string;
+  document__title: string;
+  document__url: string;
+}
+
+export interface Open5eClass {
+  slug: string;
+  name: string;
+  desc: string;
+  hit_dice: string;
+  hp_at_1st_level: string;
+  hp_at_higher_levels: string;
+  prof_armor: string;
+  prof_weapons: string;
+  prof_tools: string;
+  prof_saving_throws: string;
+  prof_skills: string;
+  equipment: string;
+  table: string;
+  spellcasting_ability: string;
+  subtypes_name: string;
+  archetypes: unknown[];
+  document__slug: string;
+  document__title: string;
+  document__url: string;
+}
+
+export interface Open5eSpell {
+  slug: string;
+  name: string;
+  desc: string;
+  higher_level: string;
+  range: string;
+  components: string;
+  material?: string;
+  can_be_cast_as_ritual: boolean;
+  duration: string;
+  requires_concentration: boolean;
+  casting_time: string;
+  level_int: number;
+  school: string;
+  dnd_class: string;
+  spell_lists: unknown[];
+  document__slug: string;
+  document__title: string;
+  document__url: string;
+}
+
+export interface Open5eMonster {
+  slug: string;
+  name: string;
+  desc: string;
+  size: string;
+  type: string;
+  subtype: string;
+  alignment: string;
+  armor_class: number;
+  armor_desc: string;
+  hit_points: number;
+  hit_dice: string;
+  speed: Record<string, unknown>;
+  strength: number;
+  dexterity: number;
+  constitution: number;
+  intelligence: number;
+  wisdom: number;
+  charisma: number;
+  strength_save: number;
+  dexterity_save: number;
+  constitution_save: number;
+  intelligence_save: number;
+  wisdom_save: number;
+  charisma_save: number;
+  skills: Record<string, unknown>;
+  damage_vulnerabilities: string;
+  damage_resistances: string;
+  damage_immunities: string;
+  condition_immunities: string;
+  senses: string;
+  languages: string;
+  challenge_rating: string;
+  cr: number;
+  actions: unknown[];
+  bonus_actions: unknown[];
+  reactions: unknown[];
+  legendary_desc: string;
+  legendary_actions: unknown[];
+  special_abilities: unknown[];
+  spell_list: unknown[];
+  environments: unknown[];
+  document__slug: string;
+  document__title: string;
+  document__url: string;
+}
+
+export interface Open5eWeapon {
+  slug: string;
+  name: string;
+  desc: string;
+  category: string;
+  cost: string;
+  damage_dice: string;
+  damage_type: string;
+  weight: string;
+  properties: unknown[];
+  document__slug: string;
+  document__title: string;
+  document__url: string;
+}
+
+export interface Open5eMagicItem {
+  slug: string;
+  name: string;
+  desc: string;
+  type: string;
+  rarity: string;
+  requires_attunement: string;
+  document__slug: string;
+  document__title: string;
+  document__url: string;
+}
+
+export interface Open5eBackground {
+  slug: string;
+  name: string;
+  desc: string;
+  skill_proficiencies: string;
+  tool_proficiencies: string;
+  languages: string;
+  equipment: string;
+  feature: string;
+  feature_desc: string;
+  suggested_characteristics: string;
+  document__slug: string;
+  document__title: string;
+  document__url: string;
+}
+
+export interface Open5eFeat {
+  slug: string;
+  name: string;
+  desc: string;
+  prerequisite: string;
+  effects: string;
+  document__slug: string;
+  document__title: string;
+  document__url: string;
+}
+
 export interface LoadStatus {
   data_type: string;
   item_count: number;
@@ -200,7 +363,7 @@ export class Open5eDataStore {
   /**
    * Store races data
    */
-  storeRaces(races: any[]): void {
+  storeRaces(races: Open5eRace[]): void {
     const stmt = this.db.prepare(`
       INSERT OR REPLACE INTO open5e_races (
         slug, name, description, ability_scores, age, alignment, 
@@ -213,7 +376,7 @@ export class Open5eDataStore {
       )
     `);
 
-    const insertMany = this.db.transaction((races: any[]) => {
+    const insertMany = this.db.transaction((races: Open5eRace[]) => {
       for (const race of races) {
         stmt.run({
           slug: race.slug,
@@ -242,7 +405,7 @@ export class Open5eDataStore {
   /**
    * Store classes data
    */
-  storeClasses(classes: any[]): void {
+  storeClasses(classes: Open5eClass[]): void {
     const stmt = this.db.prepare(`
       INSERT OR REPLACE INTO open5e_classes (
         slug, name, description, hit_dice, hp_at_1st_level, hp_at_higher_levels,
@@ -257,7 +420,7 @@ export class Open5eDataStore {
       )
     `);
 
-    const insertMany = this.db.transaction((classes: any[]) => {
+    const insertMany = this.db.transaction((classes: Open5eClass[]) => {
       for (const cls of classes) {
         stmt.run({
           slug: cls.slug,
@@ -290,7 +453,7 @@ export class Open5eDataStore {
   /**
    * Store spells data
    */
-  storeSpells(spells: any[]): void {
+  storeSpells(spells: Open5eSpell[]): void {
     const stmt = this.db.prepare(`
       INSERT OR REPLACE INTO open5e_spells (
         slug, name, description, higher_level, range, components, material,
@@ -303,7 +466,7 @@ export class Open5eDataStore {
       )
     `);
 
-    const insertMany = this.db.transaction((spells: any[]) => {
+    const insertMany = this.db.transaction((spells: Open5eSpell[]) => {
       for (const spell of spells) {
         stmt.run({
           slug: spell.slug,
@@ -335,7 +498,7 @@ export class Open5eDataStore {
   /**
    * Store monsters data
    */
-  storeMonsters(monsters: any[]): void {
+  storeMonsters(monsters: Open5eMonster[]): void {
     const stmt = this.db.prepare(`
       INSERT OR REPLACE INTO open5e_monsters (
         slug, name, description, size, type, subtype, alignment,
@@ -360,7 +523,7 @@ export class Open5eDataStore {
       )
     `);
 
-    const insertMany = this.db.transaction((monsters: any[]) => {
+    const insertMany = this.db.transaction((monsters: Open5eMonster[]) => {
       for (const monster of monsters) {
         stmt.run({
           slug: monster.slug,
@@ -418,7 +581,7 @@ export class Open5eDataStore {
   /**
    * Store weapons data
    */
-  storeWeapons(weapons: any[]): void {
+  storeWeapons(weapons: Open5eWeapon[]): void {
     const stmt = this.db.prepare(`
       INSERT OR REPLACE INTO open5e_weapons (
         slug, name, description, category, cost, damage_dice,
@@ -431,7 +594,7 @@ export class Open5eDataStore {
       )
     `);
 
-    const insertMany = this.db.transaction((weapons: any[]) => {
+    const insertMany = this.db.transaction((weapons: Open5eWeapon[]) => {
       for (const weapon of weapons) {
         stmt.run({
           slug: weapon.slug,
@@ -457,7 +620,7 @@ export class Open5eDataStore {
   /**
    * Store magic items data
    */
-  storeMagicItems(items: any[]): void {
+  storeMagicItems(items: Open5eMagicItem[]): void {
     const stmt = this.db.prepare(`
       INSERT OR REPLACE INTO open5e_magic_items (
         slug, name, description, type, rarity, requires_attunement,
@@ -468,7 +631,7 @@ export class Open5eDataStore {
       )
     `);
 
-    const insertMany = this.db.transaction((items: any[]) => {
+    const insertMany = this.db.transaction((items: Open5eMagicItem[]) => {
       for (const item of items) {
         stmt.run({
           slug: item.slug,
@@ -491,7 +654,7 @@ export class Open5eDataStore {
   /**
    * Store backgrounds data
    */
-  storeBackgrounds(backgrounds: any[]): void {
+  storeBackgrounds(backgrounds: Open5eBackground[]): void {
     const stmt = this.db.prepare(`
       INSERT OR REPLACE INTO open5e_backgrounds (
         slug, name, description, skill_proficiencies, tool_proficiencies,
@@ -504,7 +667,7 @@ export class Open5eDataStore {
       )
     `);
 
-    const insertMany = this.db.transaction((backgrounds: any[]) => {
+    const insertMany = this.db.transaction((backgrounds: Open5eBackground[]) => {
       for (const bg of backgrounds) {
         stmt.run({
           slug: bg.slug,
@@ -531,7 +694,7 @@ export class Open5eDataStore {
   /**
    * Store feats data
    */
-  storeFeats(feats: any[]): void {
+  storeFeats(feats: Open5eFeat[]): void {
     const stmt = this.db.prepare(`
       INSERT OR REPLACE INTO open5e_feats (
         slug, name, description, prerequisite, effects,
@@ -542,7 +705,7 @@ export class Open5eDataStore {
       )
     `);
 
-    const insertMany = this.db.transaction((feats: any[]) => {
+    const insertMany = this.db.transaction((feats: Open5eFeat[]) => {
       for (const feat of feats) {
         stmt.run({
           slug: feat.slug,
@@ -626,7 +789,7 @@ export class Open5eDataStore {
    */
   getSpells(filters?: { level?: number; school?: string; class?: string }): SpellRow[] {
     let query = 'SELECT * FROM open5e_spells WHERE 1=1';
-    const params: any[] = [];
+    const params: (string | number)[] = [];
 
     if (filters?.level !== undefined) {
       query += ' AND level = ?';
@@ -663,7 +826,7 @@ export class Open5eDataStore {
    */
   getMonsters(filters?: { cr?: number; type?: string }): MonsterRow[] {
     let query = 'SELECT * FROM open5e_monsters WHERE 1=1';
-    const params: any[] = [];
+    const params: (string | number)[] = [];
 
     if (filters?.cr !== undefined) {
       query += ' AND cr = ?';
