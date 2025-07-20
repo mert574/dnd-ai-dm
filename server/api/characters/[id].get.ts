@@ -2,6 +2,7 @@ import type { H3Event } from 'h3';
 import { z } from 'zod';
 import { auth } from '~/server/utils/better-auth';
 import { characterService } from '~/server/services/character.service';
+import { campaignService } from '~/server/services/campaign.service';
 import { apiErrorCreators, successResponse } from '~/server/utils/api';
 
 export default defineEventHandler(async (event: H3Event) => {
@@ -24,8 +25,18 @@ export default defineEventHandler(async (event: H3Event) => {
       throw apiErrorCreators.notFound('Character not found');
     }
 
+    // Allow access if user owns the character OR if the character is in a campaign the user participates in
     if (character.userId !== session.user.id) {
-      throw apiErrorCreators.forbidden('Access denied to this character');
+      // Check if the character is in any campaigns that the current user participates in
+      const userCampaigns = await campaignService.getByUserId(session.user.id);
+      const userCampaignIds = userCampaigns.map(campaign => campaign.id);
+      
+      // Check if this character is in any of the user's campaigns
+      const isInSharedCampaign = character.campaignId && userCampaignIds.includes(character.campaignId);
+      
+      if (!isInSharedCampaign) {
+        throw apiErrorCreators.forbidden('Access denied to this character');
+      }
     }
 
     return successResponse(character);
