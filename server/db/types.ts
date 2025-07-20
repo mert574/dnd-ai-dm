@@ -125,7 +125,7 @@ export interface Campaign {
     name: string;
     status: CampaignStatus;
     game_state: GameState | null;
-    user_id: number;
+    user_id: string;
     created_at: Timestamp;
     updated_at: Timestamp;
 }
@@ -187,7 +187,7 @@ export interface Character {
     flaws?: string;
 
     // Metadata
-    user_id: number;
+    user_id: string;
     campaign_id?: string;
     is_active: boolean;
     created_at: Timestamp;

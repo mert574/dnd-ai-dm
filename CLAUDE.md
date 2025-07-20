@@ -83,3 +83,4 @@ Always use the `ms` library for time-related values.
 ## Code Best Practices
 
 - Don't add comments to code unless it's necessary.
+- `@typescript-eslint/no-explicit-any` is set to error. don't use any type.
