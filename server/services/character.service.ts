@@ -103,6 +103,10 @@ export class CharacterService {
     return row ? this.toCharacter(row) : null;
   }
 
+  async deleteById(characterId: number, userId: string): Promise<boolean> {
+    return this.dataStore.deleteById(characterId, userId);
+  }
+
   private toCharacter(row: CharacterRow): Character {
     const mapped = mapKeys(row, (_, key) => camelCase(key));
     return {

@@ -137,6 +137,11 @@ export class CharacterDataStore {
     RETURNING *
   `);
 
+  private deleteCharacterStmt = this.db.prepare(`
+    DELETE FROM characters
+    WHERE id = ? AND user_id = ?
+  `);
+
   create(params: CreateCharacterParams): CharacterRow {
     return this.createCharacterStmt.get(params) as CharacterRow;
   }
@@ -163,5 +168,10 @@ export class CharacterDataStore {
 
   removeFromCampaign(characterId: number, userId: string): CharacterRow | undefined {
     return this.removeCharacterFromCampaignStmt.get(characterId, userId) as CharacterRow | undefined;
+  }
+
+  deleteById(characterId: number, userId: string): boolean {
+    const result = this.deleteCharacterStmt.run(characterId, userId);
+    return result.changes > 0;
   }
 }
