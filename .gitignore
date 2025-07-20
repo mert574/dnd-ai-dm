@@ -26,4 +26,6 @@ logs
 # SQLite database
 *.sqlite
 *.sqlite-journal
+*.db-shm
+*.db-wal
 .env
