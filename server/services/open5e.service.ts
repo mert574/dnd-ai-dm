@@ -229,7 +229,6 @@ class Open5eService {
     return this.store.getAllLoadStatus();
   }
 
-
   close() {
     this.store.close();
   }
