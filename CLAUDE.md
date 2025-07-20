@@ -98,7 +98,7 @@ Always use the `ms` library for time-related values.
   const users = data.filter(user => user.active);
   ```
 
-## Pre-Commit Checks
+## Task Completion Requirements
 
 - Run `npm run typecheck` and `npm run lint` before calling work done/fixed.
 
